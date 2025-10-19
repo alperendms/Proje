@@ -49,7 +49,7 @@ export const api = {
   getUnreadCount: () => axios.get(`${API_BASE}/messages/unread/count`, { headers: getAuthHeader() }),
   
   // Ranking
-  getRanking: (period) => axios.get(`${API_BASE}/ranking`, { params: { period } }),
+  getRanking: (period, language, search) => axios.get(`${API_BASE}/ranking`, { params: { period, language, search } }),
   
   // Home
   getHomeData: (params) => axios.get(`${API_BASE}/home`, { params }),
