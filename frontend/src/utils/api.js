@@ -52,7 +52,7 @@ export const api = {
   getRanking: (period) => axios.get(`${API_BASE}/ranking`, { params: { period } }),
   
   // Home
-  getHomeData: () => axios.get(`${API_BASE}/home`),
+  getHomeData: (params) => axios.get(`${API_BASE}/home`, { params }),
   
   // Admin
   getAdminSettings: () => axios.get(`${API_BASE}/admin/settings`, { headers: getAuthHeader() }),
