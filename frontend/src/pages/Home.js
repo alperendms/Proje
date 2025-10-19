@@ -149,7 +149,7 @@ const Home = ({ user }) => {
                   data-testid={`category-${category.id}`}
                 >
                   <div className="text-3xl mb-2">{category.icon || '💬'}</div>
-                  <h3 className="font-semibold text-gray-900 mb-1">{category.name}</h3>
+                  <h3 className="font-semibold text-gray-900 mb-1">{getCategoryName(category)}</h3>
                   <p className="text-sm text-gray-500">{category.quotes_count} quotes</p>
                 </Link>
               ))}
