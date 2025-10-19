@@ -193,6 +193,91 @@ class BlogCreate(BaseModel):
     featured_image: Optional[str] = None
     published: bool = True
 
+class Language(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    code: str
+    name: str
+    native_name: str
+    enabled: bool = True
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class LanguageCreate(BaseModel):
+    code: str
+    name: str
+    native_name: str
+    enabled: bool = True
+
+class Notification(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str
+    type: str  # 'like', 'follow', 'message', 'system'
+    title: str
+    message: str
+    link: Optional[str] = None
+    read: bool = False
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class NotificationCreate(BaseModel):
+    user_id: str
+    type: str
+    title: str
+    message: str
+    link: Optional[str] = None
+
+class SystemSettings(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = "system_settings"
+    # reCAPTCHA settings
+    recaptcha_enabled: bool = False
+    recaptcha_site_key: Optional[str] = None
+    recaptcha_secret_key: Optional[str] = None
+    # Twilio SMS settings
+    sms_enabled: bool = False
+    twilio_account_sid: Optional[str] = None
+    twilio_auth_token: Optional[str] = None
+    twilio_phone_number: Optional[str] = None
+    # Email/SMTP settings
+    email_enabled: bool = False
+    smtp_host: Optional[str] = None
+    smtp_port: Optional[int] = None
+    smtp_user: Optional[str] = None
+    smtp_password: Optional[str] = None
+    smtp_from: Optional[str] = None
+    # Homepage content counts
+    homepage_quotes_count: int = 5
+    homepage_categories_count: int = 5
+    homepage_users_count: int = 5
+    homepage_blogs_count: int = 4
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class SystemSettingsUpdate(BaseModel):
+    recaptcha_enabled: Optional[bool] = None
+    recaptcha_site_key: Optional[str] = None
+    recaptcha_secret_key: Optional[str] = None
+    sms_enabled: Optional[bool] = None
+    twilio_account_sid: Optional[str] = None
+    twilio_auth_token: Optional[str] = None
+    twilio_phone_number: Optional[str] = None
+    email_enabled: Optional[bool] = None
+    smtp_host: Optional[str] = None
+    smtp_port: Optional[int] = None
+    smtp_user: Optional[str] = None
+    smtp_password: Optional[str] = None
+    smtp_from: Optional[str] = None
+    homepage_quotes_count: Optional[int] = None
+    homepage_categories_count: Optional[int] = None
+    homepage_users_count: Optional[int] = None
+    homepage_blogs_count: Optional[int] = None
+
+class UserSettingsUpdate(BaseModel):
+    bio: Optional[str] = None
+    social_links: Optional[dict] = None
+    full_name: Optional[str] = None
+    avatar: Optional[str] = None
+    language: Optional[str] = None
+
 # ============= AUTH UTILS =============
 
 def create_access_token(data: dict):
