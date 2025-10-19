@@ -306,6 +306,33 @@ class SystemSettingsUpdate(BaseModel):
     homepage_users_count: Optional[int] = None
     homepage_blogs_count: Optional[int] = None
 
+class SiteTranslation(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    language_code: str  # e.g., "tr", "es"
+    translations: dict = {}  # {"home": "Ana Sayfa", "explore": "Keşfet", ...}
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class SiteTranslationUpdate(BaseModel):
+    translations: dict
+
+class UserUpdate(BaseModel):
+    username: Optional[str] = None
+    email: Optional[EmailStr] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    full_name: Optional[str] = None
+    bio: Optional[str] = None
+    avatar: Optional[str] = None
+    country: Optional[str] = None
+    country_code: Optional[str] = None
+    phone: Optional[str] = None
+    phone_country_code: Optional[str] = None
+    language: Optional[str] = None
+    score: Optional[int] = None
+    is_admin: Optional[bool] = None
+
 class UserSettingsUpdate(BaseModel):
     username: Optional[str] = None  # Can update username
     first_name: Optional[str] = None
