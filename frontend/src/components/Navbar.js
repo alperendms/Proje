@@ -98,7 +98,7 @@ const Navbar = ({ user, setUser }) => {
             </Link>
             <Link to="/blogs" data-testid="nav-blogs">
               <Button variant="ghost" size="sm" className="text-sm font-medium">
-                Blogs
+                {t('blogs')}
               </Button>
             </Link>
           </div>
