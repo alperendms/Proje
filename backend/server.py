@@ -70,13 +70,16 @@ class User(BaseModel):
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class UserRegister(BaseModel):
-    username: str
+    username: str  # Will be converted to @username format
     email: EmailStr
     password: str
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
     full_name: Optional[str] = None
     country: Optional[str] = None
     country_code: Optional[str] = None
     phone: Optional[str] = None
+    phone_country_code: Optional[str] = None
     language: str = "en"
 
 class UserLogin(BaseModel):
