@@ -533,6 +533,57 @@ const AdminPanel = () => {
                 </div>
               </div>
             </TabsContent>
+
+            {/* System Settings */}
+            <TabsContent value="system" data-testid="system-content">
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">System Configuration</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Homepage Quotes Count</Label>
+                    <Input type="number" placeholder="5" />
+                  </div>
+                  <div>
+                    <Label>Homepage Blogs Count</Label>
+                    <Input type="number" placeholder="4" />
+                  </div>
+                </div>
+                <div className="border-t pt-4">
+                  <h4 className="font-semibold mb-2">reCAPTCHA Settings</h4>
+                  <div className="space-y-2">
+                    <Input placeholder="Site Key" />
+                    <Input placeholder="Secret Key" />
+                  </div>
+                </div>
+                <div className="border-t pt-4">
+                  <h4 className="font-semibold mb-2">Twilio SMS Settings</h4>
+                  <div className="space-y-2">
+                    <Input placeholder="Account SID" />
+                    <Input placeholder="Auth Token" />
+                    <Input placeholder="Phone Number" />
+                  </div>
+                </div>
+                <Button>Save System Settings</Button>
+              </div>
+            </TabsContent>
+
+            {/* Languages */}
+            <TabsContent value="languages" data-testid="languages-content">
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Language Management</h3>
+                <p className="text-sm text-gray-600">20 languages are pre-configured. Add or edit as needed.</p>
+                <Button><Plus className="h-4 w-4 mr-2" />Add Language</Button>
+              </div>
+            </TabsContent>
+
+            {/* Users */}
+            <TabsContent value="users" data-testid="users-content">
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">User Management</h3>
+                <p className="text-sm text-gray-600">Manage users, scores, and permissions.</p>
+                <Button>View All Users</Button>
+              </div>
+            </TabsContent>
           </Tabs>
         </div>
       </div>
