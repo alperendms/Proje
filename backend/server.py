@@ -62,6 +62,7 @@ class UserRegister(BaseModel):
     password: str
     full_name: Optional[str] = None
     country: Optional[str] = None
+    country_code: Optional[str] = None
     phone: Optional[str] = None
     language: str = "en"
 
