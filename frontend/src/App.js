@@ -57,7 +57,7 @@ function App() {
     <BrowserRouter>
       <div className="App min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200">
         <Navbar user={user} setUser={setUser} />
-        <div className="pt-16">
+        <div className="pt-16 pb-20 md:pb-0">
           <Routes>
             <Route path="/" element={<Home user={user} />} />
             <Route path="/explore" element={<Explore user={user} />} />
@@ -71,8 +71,12 @@ function App() {
             <Route path="/messages/:userId" element={user ? <Messages user={user} /> : <Navigate to="/auth" />} />
             <Route path="/admin" element={user?.is_admin ? <AdminPanel /> : <Navigate to="/" />} />
             <Route path="/quote/:quoteId" element={<QuoteDetail user={user} />} />
+            <Route path="/blogs" element={<Blogs />} />
+            <Route path="/blogs/:blogId" element={<BlogDetail />} />
           </Routes>
         </div>
+        <Footer />
+        <BottomNav />
         <Toaster position="top-right" richColors />
       </div>
     </BrowserRouter>
