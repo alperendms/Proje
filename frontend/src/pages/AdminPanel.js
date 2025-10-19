@@ -678,14 +678,33 @@ const AdminPanel = () => {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="blog_image">Featured Image URL</Label>
+                    <Label htmlFor="blog_image">Featured Image</Label>
                     <Input
-                      id="blog_image"
-                      value={blogForm.featured_image}
-                      onChange={(e) => setBlogForm({ ...blogForm, featured_image: e.target.value })}
-                      placeholder="https://example.com/image.jpg"
-                      data-testid="blog-image-input"
+                      id="blog_image_file"
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => setBlogForm({ ...blogForm, image_file: e.target.files[0] })}
+                      data-testid="blog-image-file"
                     />
+                    <p className="text-xs text-gray-500 mt-1">Upload featured image from your device</p>
+                  </div>
+                  <div>
+                    <Label htmlFor="blog_language">Language</Label>
+                    <Select 
+                      value={blogForm.language || 'en'} 
+                      onValueChange={(value) => setBlogForm({ ...blogForm, language: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select language" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {languages.filter(l => l.enabled).map((lang) => (
+                          <SelectItem key={lang.code} value={lang.code}>
+                            {lang.native_name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div className="flex items-center gap-2">
                     <input
