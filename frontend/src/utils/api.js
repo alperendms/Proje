@@ -91,11 +91,48 @@ export const api = {
   // Admin Management
   getAllUsers: (params) => axios.get(`${API_BASE}/admin/users`, { params, headers: getAuthHeader() }),
   updateUserScore: (userId, score) => axios.put(`${API_BASE}/admin/users/${userId}/score`, { score }, { headers: getAuthHeader() }),
+  updateUserAdmin: (userId, data) => axios.put(`${API_BASE}/admin/users/${userId}`, data, { headers: getAuthHeader() }),
   deleteUser: (userId) => axios.delete(`${API_BASE}/admin/users/${userId}`, { headers: getAuthHeader() }),
   getAllMessages: (params) => axios.get(`${API_BASE}/admin/messages`, { params, headers: getAuthHeader() }),
   deleteMessageAdmin: (messageId) => axios.delete(`${API_BASE}/admin/messages/${messageId}`, { headers: getAuthHeader() }),
   getAllQuotesAdmin: (params) => axios.get(`${API_BASE}/admin/quotes`, { params, headers: getAuthHeader() }),
-  deleteQuoteAdmin: (quoteId) => axios.delete(`${API_BASE}/admin/quotes/${quoteId}`, { headers: getAuthHeader() })
+  deleteQuoteAdmin: (quoteId) => axios.delete(`${API_BASE}/admin/quotes/${quoteId}`, { headers: getAuthHeader() }),
+  
+  // File Uploads
+  uploadAvatar: (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return axios.post(`${API_BASE}/upload/avatar`, formData, { 
+      headers: { ...getAuthHeader(), 'Content-Type': 'multipart/form-data' } 
+    });
+  },
+  uploadBackground: (file, type) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('type', type);
+    return axios.post(`${API_BASE}/admin/upload/background`, formData, { 
+      headers: { ...getAuthHeader(), 'Content-Type': 'multipart/form-data' } 
+    });
+  },
+  uploadBlogImage: (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return axios.post(`${API_BASE}/admin/upload/blog-image`, formData, { 
+      headers: { ...getAuthHeader(), 'Content-Type': 'multipart/form-data' } 
+    });
+  },
+  
+  // Category Management
+  updateCategory: (categoryId, data) => axios.put(`${API_BASE}/admin/categories/${categoryId}`, data, { headers: getAuthHeader() }),
+  
+  // Site Translations
+  getSiteTranslations: (languageCode) => axios.get(`${API_BASE}/translations/${languageCode}`),
+  updateSiteTranslations: (languageCode, translations) => axios.put(`${API_BASE}/admin/translations/${languageCode}`, { translations }, { headers: getAuthHeader() }),
+  getTranslationKeys: () => axios.get(`${API_BASE}/admin/translation-keys`, { headers: getAuthHeader() }),
+  
+  // User Quotes with Filtering
+  getUserQuotes: (userId, sortBy) => axios.get(`${API_BASE}/users/${userId}/quotes`, { params: { sort_by: sortBy } }),
+  getUserLikedQuotes: (userId) => axios.get(`${API_BASE}/users/${userId}/liked`)
 };
 
 export default api;
