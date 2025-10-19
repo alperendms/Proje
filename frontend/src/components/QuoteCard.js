@@ -1,5 +1,5 @@
-import { Heart, Bookmark, Copy, Download } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { Heart, Bookmark, Copy, Download, Share2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
