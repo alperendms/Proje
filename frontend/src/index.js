@@ -3,33 +3,55 @@ import ReactDOM from "react-dom/client";
 import "@/index.css";
 import App from "@/App";
 
-// Suppress ResizeObserver errors (harmless React warnings)
-const resizeObserverErrFilter = (error) => {
-  if (
-    error.message === 'ResizeObserver loop completed with undelivered notifications.' ||
-    error.message === 'ResizeObserver loop limit exceeded'
-  ) {
-    return;
-  }
-  console.error(error);
+// Comprehensive ResizeObserver error suppression
+// This is a known harmless issue with Radix UI components (used by Shadcn)
+const debounce = (func, wait) => {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
 };
 
-// Override console.error
-const originalError = console.error;
-console.error = (...args) => {
-  if (typeof args[0] === 'string' && args[0].includes('ResizeObserver')) {
-    return;
+// Override window.onerror
+const originalWindowError = window.onerror;
+window.onerror = function(message, source, lineno, colno, error) {
+  if (message && typeof message === 'string' && message.includes('ResizeObserver')) {
+    return true; // Suppress error
   }
-  originalError.apply(console, args);
+  if (originalWindowError) {
+    return originalWindowError(message, source, lineno, colno, error);
+  }
+  return false;
 };
 
-// Add global error handler
+// Override unhandledrejection
+window.addEventListener('unhandledrejection', (event) => {
+  if (event.reason && event.reason.message && event.reason.message.includes('ResizeObserver')) {
+    event.preventDefault();
+  }
+});
+
+// Override error event
 window.addEventListener('error', (event) => {
   if (event.message && event.message.includes('ResizeObserver')) {
     event.stopImmediatePropagation();
     event.preventDefault();
   }
-});
+}, true);
+
+// Override console.error
+const originalConsoleError = console.error;
+console.error = function(...args) {
+  if (args && args[0] && typeof args[0] === 'string' && args[0].includes('ResizeObserver')) {
+    return;
+  }
+  originalConsoleError.apply(console, args);
+};
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
