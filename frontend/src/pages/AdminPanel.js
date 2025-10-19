@@ -66,18 +66,22 @@ const AdminPanel = () => {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [statsRes, settingsRes, backgroundsRes, categoriesRes, blogsRes] = await Promise.all([
+      const [statsRes, settingsRes, backgroundsRes, categoriesRes, blogsRes, languagesRes, systemRes] = await Promise.all([
         api.getAdminStats(),
         api.getAdminSettings(),
         api.getBackgrounds(),
         api.getCategories(),
-        api.getBlogs({ published_only: false })
+        api.getBlogs({ published_only: false }),
+        api.getLanguages(),
+        api.getSystemSettings()
       ]);
       setStats(statsRes.data);
       setSettings(settingsRes.data);
       setBackgrounds(backgroundsRes.data);
       setCategories(categoriesRes.data);
       setBlogs(blogsRes.data);
+      setLanguages(languagesRes.data);
+      setSystemSettings(systemRes.data);
       
       setSmtpForm({
         smtp_host: settingsRes.data.smtp_host || '',
@@ -85,6 +89,26 @@ const AdminPanel = () => {
         smtp_user: settingsRes.data.smtp_user || '',
         smtp_password: settingsRes.data.smtp_password || '',
         smtp_from: settingsRes.data.smtp_from || ''
+      });
+      
+      setSystemForm({
+        recaptcha_enabled: systemRes.data.recaptcha_enabled || false,
+        recaptcha_site_key: systemRes.data.recaptcha_site_key || '',
+        recaptcha_secret_key: systemRes.data.recaptcha_secret_key || '',
+        sms_enabled: systemRes.data.sms_enabled || false,
+        twilio_account_sid: systemRes.data.twilio_account_sid || '',
+        twilio_auth_token: systemRes.data.twilio_auth_token || '',
+        twilio_phone_number: systemRes.data.twilio_phone_number || '',
+        email_enabled: systemRes.data.email_enabled || false,
+        smtp_host: systemRes.data.smtp_host || '',
+        smtp_port: systemRes.data.smtp_port || 587,
+        smtp_user: systemRes.data.smtp_user || '',
+        smtp_password: systemRes.data.smtp_password || '',
+        smtp_from: systemRes.data.smtp_from || '',
+        homepage_quotes_count: systemRes.data.homepage_quotes_count || 5,
+        homepage_categories_count: systemRes.data.homepage_categories_count || 5,
+        homepage_users_count: systemRes.data.homepage_users_count || 5,
+        homepage_blogs_count: systemRes.data.homepage_blogs_count || 4
       });
     } catch (error) {
       console.error('Error loading admin data:', error);
