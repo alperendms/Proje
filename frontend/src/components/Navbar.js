@@ -1,17 +1,37 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { MessageSquare, Bell, User, LogOut, Settings, Plus } from 'lucide-react';
+import { MessageSquare, Bell, User, LogOut, Settings, Plus, FileEdit } from 'lucide-react';
 import { Button } from './ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from './ui/dropdown-menu';
+import { useEffect, useState } from 'react';
+import { api } from '../utils/api';
 
 const Navbar = ({ user, setUser }) => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
+
+  useEffect(() => {
+    if (user) {
+      fetchUnreadNotifications();
+    }
+  }, [user]);
+
+  const fetchUnreadNotifications = async () => {
+    try {
+      const response = await api.getNotifications();
+      const unread = response.data.filter(n => !n.read).length;
+      setUnreadNotifications(unread);
+    } catch (error) {
+      console.error('Failed to fetch notifications:', error);
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -89,7 +109,7 @@ const Navbar = ({ user, setUser }) => {
                 <Link to="/create" data-testid="create-quote-link">
                   <Button size="sm" className="bg-gray-900 hover:bg-gray-800 text-white">
                     <Plus className="h-4 w-4 mr-1" />
-                    {t('create_quote')}
+                    + Create
                   </Button>
                 </Link>
 
@@ -97,6 +117,18 @@ const Navbar = ({ user, setUser }) => {
                 <Link to="/messages" data-testid="messages-link">
                   <Button variant="ghost" size="icon">
                     <MessageSquare className="h-5 w-5" />
+                  </Button>
+                </Link>
+
+                {/* Notifications */}
+                <Link to="/notifications" data-testid="notifications-link">
+                  <Button variant="ghost" size="icon" className="relative">
+                    <Bell className="h-5 w-5" />
+                    {unreadNotifications > 0 && (
+                      <span className="absolute top-0 right-0 h-4 w-4 bg-red-500 rounded-full text-white text-xs flex items-center justify-center">
+                        {unreadNotifications}
+                      </span>
+                    )}
                   </Button>
                 </Link>
 
@@ -112,12 +144,24 @@ const Navbar = ({ user, setUser }) => {
                       <User className="h-4 w-4 mr-2" />
                       {t('profile')}
                     </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate('/create')} data-testid="create-quote-menu-item">
+                      <Plus className="h-4 w-4 mr-2" />
+                      + Quote
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate('/settings')} data-testid="settings-menu-item">
+                      <Settings className="h-4 w-4 mr-2" />
+                      Settings
+                    </DropdownMenuItem>
                     {user.is_admin && (
-                      <DropdownMenuItem onClick={() => navigate('/admin')} data-testid="admin-menu-item">
-                        <Settings className="h-4 w-4 mr-2" />
-                        {t('admin_panel')}
-                      </DropdownMenuItem>
+                      <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => navigate('/admin')} data-testid="admin-menu-item">
+                          <FileEdit className="h-4 w-4 mr-2" />
+                          {t('admin_panel')}
+                        </DropdownMenuItem>
+                      </>
                     )}
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleLogout} data-testid="logout-menu-item">
                       <LogOut className="h-4 w-4 mr-2" />
                       {t('logout')}
