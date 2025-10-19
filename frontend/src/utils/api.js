@@ -21,7 +21,7 @@ export const api = {
   
   // Quotes
   createQuote: (data) => axios.post(`${API_BASE}/quotes`, data, { headers: getAuthHeader() }),
-  getQuotes: (params) => axios.get(`${API_BASE}/quotes`, { params }),
+  getQuotes: (params) => axios.get(`${API_BASE}/quotes`, { params, headers: getAuthHeader() }),
   getQuote: (quoteId) => axios.get(`${API_BASE}/quotes/${quoteId}`),
   deleteQuote: (quoteId) => axios.delete(`${API_BASE}/quotes/${quoteId}`, { headers: getAuthHeader() }),
   likeQuote: (quoteId) => axios.post(`${API_BASE}/quotes/${quoteId}/like`, {}, { headers: getAuthHeader() }),
@@ -32,6 +32,8 @@ export const api = {
   createCategory: (data) => axios.post(`${API_BASE}/categories`, data, { headers: getAuthHeader() }),
   getCategories: (parentId) => axios.get(`${API_BASE}/categories`, { params: { parent_id: parentId } }),
   getCategory: (categoryId) => axios.get(`${API_BASE}/categories/${categoryId}`),
+  getCategoryTranslations: (categoryId) => axios.get(`${API_BASE}/categories/${categoryId}/translations`),
+  updateCategoryTranslation: (categoryId, data) => axios.put(`${API_BASE}/admin/categories/${categoryId}/translations`, null, { params: data, headers: getAuthHeader() }),
   
   // Discover
   getTrending: () => axios.get(`${API_BASE}/discover/trending`),
