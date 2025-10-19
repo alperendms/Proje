@@ -34,7 +34,7 @@ const AdminPanel = () => {
   });
   const [bgForm, setBgForm] = useState({ type: 'post', file: null });
   const [categoryForm, setCategoryForm] = useState({ name: '', description: '', icon: '' });
-  const [blogForm, setBlogForm] = useState({ title: '', content: '', excerpt: '', featured_image: '', published: true });
+  const [blogForm, setBlogForm] = useState({ title: '', content: '', excerpt: '', featured_image: '', image_file: null, published: true, language: 'en' });
   const [editingBlog, setEditingBlog] = useState(null);
   
   const [languageForm, setLanguageForm] = useState({ code: '', name: '', native_name: '', enabled: true });
