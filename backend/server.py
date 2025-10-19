@@ -879,32 +879,42 @@ async def delete_blog(blog_id: str, current_user: User = Depends(get_current_adm
 
 @api_router.get("/home")
 async def get_home_data():
+    # Get system settings for counts
+    settings = await db.system_settings.find_one({"id": "system_settings"}, {"_id": 0})
+    if not settings:
+        settings = SystemSettings().model_dump()
+    
+    quotes_count = settings.get('homepage_quotes_count', 5)
+    categories_count = settings.get('homepage_categories_count', 5)
+    users_count = settings.get('homepage_users_count', 5)
+    blogs_count = settings.get('homepage_blogs_count', 4)
+    
     today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
     
     # Trending quotes
     trending_quotes = await db.quotes.find(
         {"created_at": {"$gte": today.isoformat()}},
         {"_id": 0}
-    ).sort("views_count", -1).limit(5).to_list(5)
+    ).sort("views_count", -1).limit(quotes_count).to_list(quotes_count)
     
     for q in trending_quotes:
         if isinstance(q['created_at'], str):
             q['created_at'] = datetime.fromisoformat(q['created_at'])
     
     # Trending categories
-    categories = await db.categories.find({}, {"_id": 0}).sort("quotes_count", -1).limit(5).to_list(5)
+    categories = await db.categories.find({}, {"_id": 0}).sort("quotes_count", -1).limit(categories_count).to_list(categories_count)
     for c in categories:
         if isinstance(c['created_at'], str):
             c['created_at'] = datetime.fromisoformat(c['created_at'])
     
     # Trending users
-    users = await db.users.find({}, {"_id": 0, "password_hash": 0}).sort("followers_count", -1).limit(5).to_list(5)
+    users = await db.users.find({}, {"_id": 0, "password_hash": 0}).sort("followers_count", -1).limit(users_count).to_list(users_count)
     for u in users:
         if isinstance(u['created_at'], str):
             u['created_at'] = datetime.fromisoformat(u['created_at'])
     
     # Recent blogs
-    blogs = await db.blogs.find({"published": True}, {"_id": 0}).sort("created_at", -1).limit(4).to_list(4)
+    blogs = await db.blogs.find({"published": True}, {"_id": 0}).sort("created_at", -1).limit(blogs_count).to_list(blogs_count)
     for b in blogs:
         if isinstance(b['created_at'], str):
             b['created_at'] = datetime.fromisoformat(b['created_at'])
