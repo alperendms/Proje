@@ -166,14 +166,44 @@ const Home = ({ user }) => {
                 <Link
                   key={trendUser.id}
                   to={`/profile/${trendUser.id}`}
-                  className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md hover:border-gray-200 text-center"
+                  className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md hover:border-gray-200"
                   data-testid={`user-${trendUser.id}`}
                 >
-                  <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-medium text-xl mx-auto mb-3">
-                    {trendUser.username[0].toUpperCase()}
+                  <div className="flex flex-col items-center">
+                    {trendUser.avatar ? (
+                      <img
+                        src={trendUser.avatar}
+                        alt={trendUser.username}
+                        className="w-16 h-16 rounded-full object-cover mb-3"
+                      />
+                    ) : (
+                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center text-white font-medium text-xl mb-3">
+                        {trendUser.username[0].toUpperCase()}
+                      </div>
+                    )}
+                    
+                    <div className="text-center mb-3">
+                      <h3 className="font-semibold text-gray-900">
+                        {trendUser.full_name || trendUser.username}
+                      </h3>
+                      <p className="text-sm text-gray-500">{trendUser.username}</p>
+                    </div>
+                    
+                    <div className="flex items-center gap-4 text-sm text-gray-600">
+                      <div className="flex items-center gap-1">
+                        <Users className="h-4 w-4" />
+                        <span>{trendUser.followers_count}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <MessageSquare className="h-4 w-4" />
+                        <span>{trendUser.quotes_count}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <UserPlus className="h-4 w-4" />
+                        <span>{trendUser.following_count}</span>
+                      </div>
+                    </div>
                   </div>
-                  <h3 className="font-semibold text-gray-900 mb-1">{trendUser.username}</h3>
-                  <p className="text-sm text-gray-500">{trendUser.followers_count} followers</p>
                 </Link>
               ))}
             </div>
