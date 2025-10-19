@@ -63,6 +63,11 @@ const Navbar = ({ user, setUser }) => {
                 {t('ranking')}
               </Button>
             </Link>
+            <Link to="/blogs" data-testid="nav-blogs">
+              <Button variant="ghost" size="sm" className="text-sm font-medium">
+                Blogs
+              </Button>
+            </Link>
           </div>
 
           {/* Right Side */}
