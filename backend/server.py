@@ -48,15 +48,18 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30 * 24 * 60
 class User(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    username: str
+    username: str  # @username format, unique
     email: EmailStr
     password_hash: str = ""
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
     full_name: Optional[str] = None
     bio: Optional[str] = None
     avatar: Optional[str] = None
     country: Optional[str] = None
     country_code: Optional[str] = None
     phone: Optional[str] = None
+    phone_country_code: Optional[str] = None
     language: str = "en"
     social_links: Optional[dict] = {}
     followers_count: int = 0
