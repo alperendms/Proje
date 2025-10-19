@@ -2,13 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { MessageCircle, Users, Heart, Bookmark, FileText, Twitter, Instagram, Facebook, Linkedin, Globe, TrendingUp, Eye, Edit } from 'lucide-react';
+import { MessageCircle, Users, Heart, Bookmark, FileText, Twitter, Instagram, Facebook, Linkedin, Globe } from 'lucide-react';
 import { toast } from 'sonner';
 import api from '../utils/api';
 import QuoteCard from '../components/QuoteCard';
 import { Button } from '../components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 
 const Profile = ({ user: currentUser }) => {
   const { t } = useTranslation();
@@ -21,17 +20,10 @@ const Profile = ({ user: currentUser }) => {
   const [following, setFollowing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('quotes');
-  const [quoteSortBy, setQuoteSortBy] = useState('recent');
 
   useEffect(() => {
     loadProfile();
   }, [userId]);
-
-  useEffect(() => {
-    if (activeTab === 'quotes') {
-      loadUserQuotes(quoteSortBy);
-    }
-  }, [quoteSortBy]);
 
   const loadProfile = async () => {
     setLoading(true);
@@ -40,7 +32,8 @@ const Profile = ({ user: currentUser }) => {
       setUser(userResponse.data);
 
       // Load user's quotes
-      loadUserQuotes('recent');
+      const quotesResponse = await api.getQuotes({ user_id: userId });
+      setQuotes(quotesResponse.data);
 
       if (currentUser && userId !== currentUser.id) {
         const followResponse = await api.getFollowStatus(userId);
@@ -54,18 +47,9 @@ const Profile = ({ user: currentUser }) => {
     }
   };
 
-  const loadUserQuotes = async (sortBy) => {
-    try {
-      const response = await api.getUserQuotes(userId, sortBy);
-      setQuotes(response.data);
-    } catch (error) {
-      console.error('Error loading quotes:', error);
-    }
-  };
-
   const loadLikedQuotes = async () => {
     try {
-      const response = await api.getUserLikedQuotes(userId);
+      const response = await api.getMostLiked({ user_id: userId });
       setLikedQuotes(response.data);
     } catch (error) {
       console.error('Error loading liked quotes:', error);
@@ -114,7 +98,7 @@ const Profile = ({ user: currentUser }) => {
       toast.error('Please login to send messages');
       return;
     }
-    navigate(`/messages?user=${userId}`);
+    navigate(`/messages/${userId}`);
   };
 
   const getSocialIcon = (platform) => {
@@ -172,45 +156,32 @@ const Profile = ({ user: currentUser }) => {
               <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                 <div>
                   <h1 className="text-3xl font-bold text-gray-900">{user.full_name || user.username}</h1>
-                  <p className="text-gray-500">{user.username}</p>
+                  <p className="text-gray-500">@{user.username}</p>
                   {user.bio && (
                     <p className="mt-2 text-gray-700">{user.bio}</p>
                   )}
                 </div>
 
-                <div className="flex gap-2 flex-wrap">
-                  {isOwnProfile && (
+                {!isOwnProfile && currentUser && (
+                  <div className="flex gap-2">
                     <Button
-                      onClick={() => navigate('/settings')}
+                      onClick={handleFollow}
+                      variant={following ? 'outline' : 'default'}
+                      className="flex items-center gap-2"
+                    >
+                      <Users className="h-4 w-4" />
+                      {following ? 'Unfollow' : 'Follow'}
+                    </Button>
+                    <Button
+                      onClick={handleMessage}
                       variant="outline"
                       className="flex items-center gap-2"
                     >
-                      <Edit className="h-4 w-4" />
-                      Edit Profile
+                      <MessageCircle className="h-4 w-4" />
+                      Message
                     </Button>
-                  )}
-                  
-                  {!isOwnProfile && currentUser && (
-                    <>
-                      <Button
-                        onClick={handleFollow}
-                        variant={following ? 'outline' : 'default'}
-                        className="flex items-center gap-2"
-                      >
-                        <Users className="h-4 w-4" />
-                        {following ? 'Unfollow' : 'Follow'}
-                      </Button>
-                      <Button
-                        onClick={handleMessage}
-                        variant="outline"
-                        className="flex items-center gap-2"
-                      >
-                        <MessageCircle className="h-4 w-4" />
-                        Message
-                      </Button>
-                    </>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
 
               {/* Stats */}
@@ -260,61 +231,24 @@ const Profile = ({ user: currentUser }) => {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
-          <div className="flex justify-center">
-            <TabsList className="bg-white border border-gray-200 p-1 rounded-lg">
-              <TabsTrigger value="quotes" className="flex items-center gap-2">
-                <FileText className="h-4 w-4" />
-                Quotes
+          <TabsList className="bg-white border border-gray-200 p-1 rounded-lg">
+            <TabsTrigger value="quotes" className="flex items-center gap-2">
+              <FileText className="h-4 w-4" />
+              Quotes
+            </TabsTrigger>
+            <TabsTrigger value="likes" className="flex items-center gap-2">
+              <Heart className="h-4 w-4" />
+              Likes
+            </TabsTrigger>
+            {isOwnProfile && (
+              <TabsTrigger value="saved" className="flex items-center gap-2">
+                <Bookmark className="h-4 w-4" />
+                Saved
               </TabsTrigger>
-              <TabsTrigger value="likes" className="flex items-center gap-2">
-                <Heart className="h-4 w-4" />
-                Likes
-              </TabsTrigger>
-              {isOwnProfile && (
-                <TabsTrigger value="saved" className="flex items-center gap-2">
-                  <Bookmark className="h-4 w-4" />
-                  Saved
-                </TabsTrigger>
-              )}
-            </TabsList>
-          </div>
+            )}
+          </TabsList>
 
           <TabsContent value="quotes" className="space-y-4">
-            {/* Quote Sorting */}
-            <div className="flex justify-end">
-              <Select value={quoteSortBy} onValueChange={setQuoteSortBy}>
-                <SelectTrigger className="w-48">
-                  <SelectValue placeholder="Sort by" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="recent">
-                    <div className="flex items-center gap-2">
-                      <FileText className="h-4 w-4" />
-                      Most Recent
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="most_liked">
-                    <div className="flex items-center gap-2">
-                      <Heart className="h-4 w-4" />
-                      Most Liked
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="most_saved">
-                    <div className="flex items-center gap-2">
-                      <Bookmark className="h-4 w-4" />
-                      Most Saved
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="most_viewed">
-                    <div className="flex items-center gap-2">
-                      <Eye className="h-4 w-4" />
-                      Most Viewed
-                    </div>
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
             {quotes.length === 0 ? (
               <div className="text-center py-12 bg-white rounded-2xl border border-gray-200">
                 <FileText className="h-16 w-16 text-gray-300 mx-auto mb-4" />
@@ -322,7 +256,7 @@ const Profile = ({ user: currentUser }) => {
               </div>
             ) : (
               quotes.map((quote) => (
-                <QuoteCard key={quote.id} quote={quote} user={currentUser} />
+                <QuoteCard key={quote.id} quote={quote} currentUser={currentUser} />
               ))
             )}
           </TabsContent>
@@ -335,7 +269,7 @@ const Profile = ({ user: currentUser }) => {
               </div>
             ) : (
               likedQuotes.map((quote) => (
-                <QuoteCard key={quote.id} quote={quote} user={currentUser} />
+                <QuoteCard key={quote.id} quote={quote} currentUser={currentUser} />
               ))
             )}
           </TabsContent>
@@ -349,7 +283,7 @@ const Profile = ({ user: currentUser }) => {
                 </div>
               ) : (
                 savedQuotes.map((quote) => (
-                  <QuoteCard key={quote.id} quote={quote} user={currentUser} />
+                  <QuoteCard key={quote.id} quote={quote} currentUser={currentUser} />
                 ))
               )}
             </TabsContent>
