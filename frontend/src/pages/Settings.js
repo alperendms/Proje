@@ -76,10 +76,10 @@ const Settings = ({ user, setUser }) => {
       phone: user.phone || '',
       phone_country_code: user.phone_country_code || '',
       language: user.language || 'en',
-      social_links: user.social_links || {
-        twitter: '',
-        instagram: '',
-        website: ''
+      social_links: {
+        twitter: user.social_links?.twitter || '',
+        instagram: user.social_links?.instagram || '',
+        website: user.social_links?.website || ''
       }
     });
   }, [user, navigate]);
