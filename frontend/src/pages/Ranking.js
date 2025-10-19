@@ -54,11 +54,27 @@ const Ranking = () => {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="daily" data-testid="period-daily">{t('daily')}</SelectItem>
-              <SelectItem value="monthly" data-testid="period-monthly">{t('monthly')}</SelectItem>
-              <SelectItem value="yearly" data-testid="period-yearly">{t('yearly')}</SelectItem>
+              <SelectItem value="daily" data-testid="period-daily">Daily</SelectItem>
+              <SelectItem value="monthly" data-testid="period-monthly">Monthly</SelectItem>
+              <SelectItem value="yearly" data-testid="period-yearly">Yearly</SelectItem>
             </SelectContent>
           </Select>
+        </div>
+
+        {/* Search Box */}
+        <div className="mb-6 flex gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Input
+              type="text"
+              placeholder="Search users..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+              className="pl-10"
+            />
+          </div>
+          <Button onClick={handleSearch}>Search</Button>
         </div>
 
         <div className="space-y-4" data-testid="rankings-list">
