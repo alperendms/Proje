@@ -194,18 +194,38 @@ const AdminPanel = () => {
       return;
     }
     try {
+      let featuredImage = blogForm.featured_image;
+      
+      // Upload image if file is selected
+      if (blogForm.image_file) {
+        const uploadRes = await api.uploadBlogImage(blogForm.image_file);
+        featuredImage = uploadRes.data.image_url;
+      }
+      
+      const blogData = {
+        ...blogForm,
+        featured_image: featuredImage,
+        language: blogForm.language || 'en'
+      };
+      delete blogData.image_file; // Remove file from payload
+      
       if (editingBlog) {
-        await api.updateBlog(editingBlog.id, blogForm);
+        await api.updateBlog(editingBlog.id, blogData);
         toast.success('Blog updated');
         setEditingBlog(null);
       } else {
-        await api.createBlog(blogForm);
+        await api.createBlog(blogData);
         toast.success('Blog created');
       }
-      setBlogForm({ title: '', content: '', excerpt: '', featured_image: '', published: true });
+      setBlogForm({ title: '', content: '', excerpt: '', featured_image: '', image_file: null, published: true, language: 'en' });
+      // Reset file input
+      if (document.getElementById('blog_image_file')) {
+        document.getElementById('blog_image_file').value = '';
+      }
       const res = await api.getBlogs({ published_only: false });
       setBlogs(res.data);
     } catch (error) {
+      console.error('Error saving blog:', error);
       toast.error('Error saving blog');
     }
   };
