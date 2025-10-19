@@ -275,6 +275,48 @@ const AdminPanel = () => {
     }
   };
 
+  // Translation Management Functions
+  const handleOpenTranslateModal = async (language) => {
+    setCurrentTranslatingLang(language);
+    setLoadingTranslations(true);
+    setShowTranslateModal(true);
+    
+    try {
+      // Load translation keys structure
+      const keysRes = await api.getTranslationKeys();
+      setTranslationKeys(keysRes.data);
+      
+      // Load existing translations for this language
+      const transRes = await api.getSiteTranslations(language.code);
+      setTranslations(transRes.data.translations || {});
+    } catch (error) {
+      console.error('Error loading translations:', error);
+      toast.error('Error loading translations');
+    } finally {
+      setLoadingTranslations(false);
+    }
+  };
+
+  const handleSaveTranslations = async () => {
+    if (!currentTranslatingLang) return;
+    
+    try {
+      await api.updateSiteTranslations(currentTranslatingLang.code, translations);
+      toast.success(`Translations saved for ${currentTranslatingLang.native_name}`);
+      setShowTranslateModal(false);
+    } catch (error) {
+      console.error('Error saving translations:', error);
+      toast.error('Error saving translations');
+    }
+  };
+
+  const handleTranslationChange = (key, value) => {
+    setTranslations(prev => ({
+      ...prev,
+      [key]: value
+    }));
+  };
+
   // System Settings Functions
   const handleSaveSystemSettings = async (e) => {
     e.preventDefault();
