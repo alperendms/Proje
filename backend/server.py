@@ -1156,12 +1156,47 @@ async def startup_db():
             email="admin@quotevibe.com",
             password_hash=pwd_context.hash("admin123"),
             full_name="Admin",
-            is_admin=True
+            is_admin=True,
+            social_links={}
         )
         doc = admin_user.model_dump()
         doc['created_at'] = doc['created_at'].isoformat()
         await db.users.insert_one(doc)
         logger.info("Admin user created")
+    
+    # Initialize default languages
+    langs_count = await db.languages.count_documents({})
+    if langs_count == 0:
+        default_languages = [
+            {"code": "en", "name": "English", "native_name": "English"},
+            {"code": "tr", "name": "Turkish", "native_name": "Türkçe"},
+            {"code": "es", "name": "Spanish", "native_name": "Español"},
+            {"code": "fr", "name": "French", "native_name": "Français"},
+            {"code": "de", "name": "German", "native_name": "Deutsch"},
+            {"code": "ar", "name": "Arabic", "native_name": "العربية"},
+            {"code": "zh", "name": "Chinese", "native_name": "中文"},
+            {"code": "ja", "name": "Japanese", "native_name": "日本語"},
+            {"code": "ru", "name": "Russian", "native_name": "Русский"},
+            {"code": "pt", "name": "Portuguese", "native_name": "Português"},
+            {"code": "it", "name": "Italian", "native_name": "Italiano"},
+            {"code": "nl", "name": "Dutch", "native_name": "Nederlands"},
+            {"code": "ko", "name": "Korean", "native_name": "한국어"},
+            {"code": "hi", "name": "Hindi", "native_name": "हिन्दी"},
+            {"code": "sv", "name": "Swedish", "native_name": "Svenska"},
+            {"code": "pl", "name": "Polish", "native_name": "Polski"},
+            {"code": "no", "name": "Norwegian", "native_name": "Norsk"},
+            {"code": "da", "name": "Danish", "native_name": "Dansk"},
+            {"code": "fi", "name": "Finnish", "native_name": "Suomi"},
+            {"code": "el", "name": "Greek", "native_name": "Ελληνικά"},
+        ]
+        
+        for lang_data in default_languages:
+            lang = Language(**lang_data, enabled=True)
+            doc = lang.model_dump()
+            doc['created_at'] = doc['created_at'].isoformat()
+            await db.languages.insert_one(doc)
+        
+        logger.info("Default languages created")
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
