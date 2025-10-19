@@ -403,7 +403,9 @@ async def create_quote(quote_data: QuoteCreate, current_user: User = Depends(get
         content=quote_data.content,
         author=quote_data.author,
         category_id=quote_data.category_id,
-        tags=quote_data.tags
+        tags=quote_data.tags,
+        language=current_user.language,
+        country=current_user.country
     )
     
     doc = quote.model_dump()
@@ -418,16 +420,23 @@ async def create_quote(quote_data: QuoteCreate, current_user: User = Depends(get
 
 @api_router.get("/quotes")
 async def get_quotes(skip: int = 0, limit: int = 20, category_id: Optional[str] = None, 
-                    search: Optional[str] = None, user_id: Optional[str] = None):
+                    search: Optional[str] = None, user_id: Optional[str] = None,
+                    language: Optional[str] = None):
     query = {}
     if category_id:
         query['category_id'] = category_id
     if user_id:
         query['user_id'] = user_id
+    
+    # Language filtering: show user's language + English (default)
+    if language:
+        query['$or'] = [{'language': language}, {'language': 'en'}]
+    
     if search:
-        query['$or'] = [
-            {'content': {'$regex': search, '$options': 'i'}},
-            {'author': {'$regex': search, '$options': 'i'}},
+        search_query = {
+            '$or': [
+                {'content': {'$regex': search, '$options': 'i'}},
+                {'author': {'$regex': search, '$options': 'i'}},
             {'tags': {'$in': [re.compile(search, re.IGNORECASE)]}}
         ]
     
