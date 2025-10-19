@@ -22,6 +22,13 @@ import aiofiles
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
+# Create uploads directory
+UPLOAD_DIR = ROOT_DIR / 'uploads'
+UPLOAD_DIR.mkdir(exist_ok=True)
+(UPLOAD_DIR / 'avatars').mkdir(exist_ok=True)
+(UPLOAD_DIR / 'backgrounds').mkdir(exist_ok=True)
+(UPLOAD_DIR / 'blogs').mkdir(exist_ok=True)
+
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
