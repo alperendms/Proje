@@ -1057,8 +1057,9 @@ async def get_home_data(language: Optional[str] = "en"):
         if isinstance(c['created_at'], str):
             c['created_at'] = datetime.fromisoformat(c['created_at'])
     
-    # Trending users
-    users = await db.users.find({}, {"_id": 0, "password_hash": 0}).sort("followers_count", -1).limit(users_count).to_list(users_count)
+    # Trending users - filtered by language
+    user_query = {"language": language} if language else {}
+    users = await db.users.find(user_query, {"_id": 0, "password_hash": 0}).sort("followers_count", -1).limit(users_count).to_list(users_count)
     for u in users:
         if isinstance(u['created_at'], str):
             u['created_at'] = datetime.fromisoformat(u['created_at'])
