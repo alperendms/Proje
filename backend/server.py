@@ -302,11 +302,18 @@ class SystemSettingsUpdate(BaseModel):
     homepage_blogs_count: Optional[int] = None
 
 class UserSettingsUpdate(BaseModel):
+    username: Optional[str] = None  # Can update username
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
     bio: Optional[str] = None
     social_links: Optional[dict] = None
     full_name: Optional[str] = None
     avatar: Optional[str] = None
     language: Optional[str] = None
+    country: Optional[str] = None
+    country_code: Optional[str] = None
+    phone: Optional[str] = None
+    phone_country_code: Optional[str] = None
 
 # ============= AUTH UTILS =============
 
