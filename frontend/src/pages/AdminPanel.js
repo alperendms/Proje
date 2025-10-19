@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { Trash2, Plus, Users, FileText, Layers, MessageSquare } from 'lucide-react';
+import { Trash2, Plus, Users, FileText, Layers, MessageSquare, Settings as SettingsIcon, Globe } from 'lucide-react';
 import api from '../utils/api';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -9,6 +9,7 @@ import { Label } from '../components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Textarea } from '../components/ui/textarea';
+import { Switch } from '../components/ui/switch';
 
 const AdminPanel = () => {
   const { t } = useTranslation();
@@ -17,6 +18,9 @@ const AdminPanel = () => {
   const [backgrounds, setBackgrounds] = useState([]);
   const [categories, setCategories] = useState([]);
   const [blogs, setBlogs] = useState([]);
+  const [languages, setLanguages] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [systemSettings, setSystemSettings] = useState(null);
   const [loading, setLoading] = useState(true);
   
   // Forms
@@ -31,6 +35,29 @@ const AdminPanel = () => {
   const [categoryForm, setCategoryForm] = useState({ name: '', description: '', icon: '' });
   const [blogForm, setBlogForm] = useState({ title: '', content: '', excerpt: '', featured_image: '', published: true });
   const [editingBlog, setEditingBlog] = useState(null);
+  
+  const [languageForm, setLanguageForm] = useState({ code: '', name: '', native_name: '', enabled: true });
+  const [editingLanguage, setEditingLanguage] = useState(null);
+  
+  const [systemForm, setSystemForm] = useState({
+    recaptcha_enabled: false,
+    recaptcha_site_key: '',
+    recaptcha_secret_key: '',
+    sms_enabled: false,
+    twilio_account_sid: '',
+    twilio_auth_token: '',
+    twilio_phone_number: '',
+    email_enabled: false,
+    smtp_host: '',
+    smtp_port: 587,
+    smtp_user: '',
+    smtp_password: '',
+    smtp_from: '',
+    homepage_quotes_count: 5,
+    homepage_categories_count: 5,
+    homepage_users_count: 5,
+    homepage_blogs_count: 4
+  });
 
   useEffect(() => {
     loadData();
