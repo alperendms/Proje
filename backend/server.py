@@ -320,14 +320,6 @@ async def register(user_data: UserRegister):
     if existing:
         raise HTTPException(status_code=400, detail="Email or username already exists")
     
-    country_code = None
-    if user_data.phone:
-        try:
-            phone_number = phonenumbers.parse(user_data.phone, None)
-            country_code = phonenumbers.region_code_for_number(phone_number)
-        except:
-            pass
-    
     user = User(
         username=user_data.username,
         email=user_data.email,
@@ -335,8 +327,9 @@ async def register(user_data: UserRegister):
         full_name=user_data.full_name,
         country=user_data.country,
         phone=user_data.phone,
-        country_code=country_code,
-        language=user_data.language
+        country_code=user_data.country_code,
+        language=user_data.language,
+        social_links={}
     )
     
     doc = user.model_dump()
