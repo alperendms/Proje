@@ -53,9 +53,8 @@ const Navbar = ({ user, setUser }) => {
     navigate('/');
   };
 
-  const handleLanguageChange = (newLang) => {
-    changeLanguage(newLang);
-    i18n.changeLanguage(newLang);
+  const handleLanguageChange = async (newLang) => {
+    await changeLanguage(newLang);
   };
 
   return (
