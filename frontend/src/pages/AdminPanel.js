@@ -39,6 +39,10 @@ const AdminPanel = () => {
   const [languageForm, setLanguageForm] = useState({ code: '', name: '', native_name: '', enabled: true });
   const [editingLanguage, setEditingLanguage] = useState(null);
   
+  const [translationForm, setTranslationForm] = useState({ language: '', name: '', description: '' });
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [showTranslationModal, setShowTranslationModal] = useState(false);
+  
   const [systemForm, setSystemForm] = useState({
     recaptcha_enabled: false,
     recaptcha_site_key: '',
