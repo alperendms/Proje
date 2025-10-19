@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { MessageSquare, Bell, User, LogOut, Settings, Plus, FileEdit } from 'lucide-react';
+import { MessageSquare, Bell, User, LogOut, Settings, Plus, FileEdit, Globe } from 'lucide-react';
 import { Button } from './ui/button';
 import {
   DropdownMenu,
@@ -10,17 +10,22 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from './ui/dropdown-menu';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { api } from '../utils/api';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const Navbar = ({ user, setUser }) => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [unreadNotifications, setUnreadNotifications] = useState(0);
+  const [languages, setLanguages] = useState([]);
+  const { language, changeLanguage } = useLanguage();
 
   useEffect(() => {
     if (user) {
       fetchUnreadNotifications();
     }
+    loadLanguages();
   }, [user]);
 
   const fetchUnreadNotifications = async () => {
@@ -33,14 +38,23 @@ const Navbar = ({ user, setUser }) => {
     }
   };
 
+  const loadLanguages = async () => {
+    try {
+      const response = await api.getLanguages();
+      setLanguages(response.data);
+    } catch (error) {
+      console.error('Failed to load languages:', error);
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     setUser(null);
     navigate('/');
   };
 
-  const toggleLanguage = () => {
-    const newLang = i18n.language === 'en' ? 'tr' : 'en';
+  const handleLanguageChange = (newLang) => {
+    changeLanguage(newLang);
     i18n.changeLanguage(newLang);
   };
 
@@ -92,16 +106,20 @@ const Navbar = ({ user, setUser }) => {
 
           {/* Right Side */}
           <div className="flex items-center space-x-3">
-            {/* Language Toggle */}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={toggleLanguage}
-              className="text-xs font-medium"
-              data-testid="language-toggle"
-            >
-              {i18n.language === 'en' ? 'TR' : 'EN'}
-            </Button>
+            {/* Language Selector */}
+            <Select value={language} onValueChange={handleLanguageChange}>
+              <SelectTrigger className="w-32" data-testid="language-selector">
+                <Globe className="h-4 w-4 mr-2" />
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {languages.map((lang) => (
+                  <SelectItem key={lang.code} value={lang.code}>
+                    {lang.native_name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
             {user ? (
               <>
