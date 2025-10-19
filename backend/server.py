@@ -507,10 +507,10 @@ async def get_quotes(skip: int = 0, limit: int = 20, category_id: Optional[str] 
     if user_id:
         query['user_id'] = user_id
     
-    # Language filtering: show user's language + English (default)
+    # Language filtering: ONLY selected language (no fallback)
     if language:
         if 'user_id' not in query:  # Don't apply language filter when viewing specific user's quotes
-            query['$or'] = [{'language': language}, {'language': 'en'}]
+            query['language'] = language
     
     if search:
         search_condition = {
@@ -520,9 +520,12 @@ async def get_quotes(skip: int = 0, limit: int = 20, category_id: Optional[str] 
                 {'tags': {'$in': [re.compile(search, re.IGNORECASE)]}}
             ]
         }
-        if '$or' in query:
-            # Merge language filter with search filter
-            query = {'$and': [{'$or': query['$or']}, search_condition]}
+        # Add search condition
+        if 'language' in query:
+            # Keep language filter and add search
+            query['$and'] = [{'language': query.pop('language')}, search_condition]
+        else:
+            query.update(search_condition)
         else:
             query.update(search_condition)
     
