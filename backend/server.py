@@ -80,9 +80,11 @@ class UserProfile(BaseModel):
     avatar: Optional[str] = None
     country: Optional[str] = None
     country_code: Optional[str] = None
+    social_links: Optional[dict] = {}
     followers_count: int = 0
     following_count: int = 0
     quotes_count: int = 0
+    score: int = 0
     is_admin: bool = False
     created_at: datetime
 
