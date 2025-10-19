@@ -916,6 +916,221 @@ async def get_home_data():
         "recent_blogs": blogs
     }
 
+# ============= LANGUAGE ROUTES =============
+
+@api_router.get("/languages")
+async def get_languages():
+    languages = await db.languages.find({"enabled": True}, {"_id": 0}).to_list(None)
+    for lang in languages:
+        if isinstance(lang['created_at'], str):
+            lang['created_at'] = datetime.fromisoformat(lang['created_at'])
+    return languages
+
+@api_router.post("/admin/languages")
+async def create_language(lang_data: LanguageCreate, current_user: User = Depends(get_current_admin)):
+    existing = await db.languages.find_one({"code": lang_data.code}, {"_id": 0})
+    if existing:
+        raise HTTPException(status_code=400, detail="Language code already exists")
+    
+    language = Language(**lang_data.model_dump())
+    doc = language.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    await db.languages.insert_one(doc)
+    return language
+
+@api_router.put("/admin/languages/{lang_id}")
+async def update_language(lang_id: str, lang_data: LanguageCreate, current_user: User = Depends(get_current_admin)):
+    update_data = {**lang_data.model_dump(), "updated_at": datetime.now(timezone.utc).isoformat()}
+    result = await db.languages.update_one({"id": lang_id}, {"$set": update_data})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Language not found")
+    return {"message": "Language updated"}
+
+@api_router.delete("/admin/languages/{lang_id}")
+async def delete_language(lang_id: str, current_user: User = Depends(get_current_admin)):
+    result = await db.languages.delete_one({"id": lang_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Language not found")
+    return {"message": "Language deleted"}
+
+# ============= NOTIFICATION ROUTES =============
+
+@api_router.get("/notifications")
+async def get_notifications(current_user: User = Depends(get_current_user)):
+    notifications = await db.notifications.find(
+        {"user_id": current_user.id}, 
+        {"_id": 0}
+    ).sort("created_at", -1).limit(50).to_list(50)
+    for n in notifications:
+        if isinstance(n['created_at'], str):
+            n['created_at'] = datetime.fromisoformat(n['created_at'])
+    return notifications
+
+@api_router.put("/notifications/{notification_id}/read")
+async def mark_notification_read(notification_id: str, current_user: User = Depends(get_current_user)):
+    result = await db.notifications.update_one(
+        {"id": notification_id, "user_id": current_user.id},
+        {"$set": {"read": True}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Notification not found")
+    return {"message": "Notification marked as read"}
+
+@api_router.post("/admin/notifications/broadcast")
+async def broadcast_notification(notification: NotificationCreate, current_user: User = Depends(get_current_admin)):
+    # Send notification to all users
+    users = await db.users.find({}, {"_id": 0, "id": 1}).to_list(None)
+    notifications = []
+    for user in users:
+        notif = Notification(
+            user_id=user['id'],
+            type=notification.type,
+            title=notification.title,
+            message=notification.message,
+            link=notification.link
+        )
+        doc = notif.model_dump()
+        doc['created_at'] = doc['created_at'].isoformat()
+        notifications.append(doc)
+    
+    if notifications:
+        await db.notifications.insert_many(notifications)
+    return {"message": f"Sent {len(notifications)} notifications"}
+
+@api_router.post("/notifications")
+async def create_notification(notification: NotificationCreate, current_user: User = Depends(get_current_user)):
+    notif = Notification(**notification.model_dump())
+    doc = notif.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    await db.notifications.insert_one(doc)
+    return notif
+
+# ============= SETTINGS ROUTES =============
+
+@api_router.get("/settings/system")
+async def get_system_settings():
+    settings = await db.system_settings.find_one({"id": "system_settings"}, {"_id": 0})
+    if not settings:
+        # Return default settings
+        return SystemSettings().model_dump()
+    if isinstance(settings.get('updated_at'), str):
+        settings['updated_at'] = datetime.fromisoformat(settings['updated_at'])
+    return settings
+
+@api_router.put("/admin/settings/system")
+async def update_system_settings(settings_data: SystemSettingsUpdate, current_user: User = Depends(get_current_admin)):
+    update_data = {k: v for k, v in settings_data.model_dump().items() if v is not None}
+    update_data['updated_at'] = datetime.now(timezone.utc).isoformat()
+    
+    await db.system_settings.update_one(
+        {"id": "system_settings"},
+        {"$set": update_data},
+        upsert=True
+    )
+    return {"message": "Settings updated"}
+
+@api_router.put("/settings/user")
+async def update_user_settings(settings_data: UserSettingsUpdate, current_user: User = Depends(get_current_user)):
+    update_data = {k: v for k, v in settings_data.model_dump().items() if v is not None}
+    
+    if update_data:
+        await db.users.update_one({"id": current_user.id}, {"$set": update_data})
+    
+    return {"message": "User settings updated"}
+
+# ============= SHARE QUOTE ROUTE =============
+
+@api_router.get("/quotes/{quote_id}/share")
+async def get_share_data(quote_id: str):
+    quote = await db.quotes.find_one({"id": quote_id}, {"_id": 0})
+    if not quote:
+        raise HTTPException(status_code=404, detail="Quote not found")
+    
+    # Get user data
+    user = await db.users.find_one({"id": quote['user_id']}, {"_id": 0, "password_hash": 0})
+    if isinstance(quote['created_at'], str):
+        quote['created_at'] = datetime.fromisoformat(quote['created_at'])
+    
+    return {
+        "quote": quote,
+        "user": user,
+        "share_url": f"/quote/{quote_id}"
+    }
+
+# ============= ADMIN USER MANAGEMENT =============
+
+@api_router.get("/admin/users")
+async def get_all_users(skip: int = 0, limit: int = 50, current_user: User = Depends(get_current_admin)):
+    users = await db.users.find({}, {"_id": 0, "password_hash": 0}).skip(skip).limit(limit).to_list(limit)
+    for u in users:
+        if isinstance(u['created_at'], str):
+            u['created_at'] = datetime.fromisoformat(u['created_at'])
+    return users
+
+@api_router.put("/admin/users/{user_id}/score")
+async def update_user_score(user_id: str, score: int, current_user: User = Depends(get_current_admin)):
+    result = await db.users.update_one({"id": user_id}, {"$set": {"score": score}})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {"message": "User score updated"}
+
+@api_router.delete("/admin/users/{user_id}")
+async def delete_user(user_id: str, current_user: User = Depends(get_current_admin)):
+    if user_id == current_user.id:
+        raise HTTPException(status_code=400, detail="Cannot delete yourself")
+    
+    result = await db.users.delete_one({"id": user_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Clean up user data
+    await db.quotes.delete_many({"user_id": user_id})
+    await db.messages.delete_many({"$or": [{"sender_id": user_id}, {"receiver_id": user_id}]})
+    await db.follows.delete_many({"$or": [{"follower_id": user_id}, {"following_id": user_id}]})
+    await db.likes.delete_many({"user_id": user_id})
+    await db.saves.delete_many({"user_id": user_id})
+    
+    return {"message": "User deleted"}
+
+# ============= ADMIN MESSAGES MANAGEMENT =============
+
+@api_router.get("/admin/messages")
+async def get_all_messages(skip: int = 0, limit: int = 100, current_user: User = Depends(get_current_admin)):
+    messages = await db.messages.find({}, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+    for m in messages:
+        if isinstance(m['created_at'], str):
+            m['created_at'] = datetime.fromisoformat(m['created_at'])
+    return messages
+
+@api_router.delete("/admin/messages/{message_id}")
+async def delete_message_admin(message_id: str, current_user: User = Depends(get_current_admin)):
+    result = await db.messages.delete_one({"id": message_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Message not found")
+    return {"message": "Message deleted"}
+
+# ============= ADMIN QUOTES MANAGEMENT =============
+
+@api_router.get("/admin/quotes")
+async def get_all_quotes_admin(skip: int = 0, limit: int = 100, current_user: User = Depends(get_current_admin)):
+    quotes = await db.quotes.find({}, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+    for q in quotes:
+        if isinstance(q['created_at'], str):
+            q['created_at'] = datetime.fromisoformat(q['created_at'])
+    return quotes
+
+@api_router.delete("/admin/quotes/{quote_id}")
+async def delete_quote_admin(quote_id: str, current_user: User = Depends(get_current_admin)):
+    result = await db.quotes.delete_one({"id": quote_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Quote not found")
+    
+    # Clean up related data
+    await db.likes.delete_many({"quote_id": quote_id})
+    await db.saves.delete_many({"quote_id": quote_id})
+    
+    return {"message": "Quote deleted"}
+
 app.include_router(api_router)
 
 app.add_middleware(
