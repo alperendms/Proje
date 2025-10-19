@@ -79,16 +79,35 @@ const Ranking = () => {
 
                 {/* User Info */}
                 <Link to={`/profile/${ranking.user.id}`} className="flex items-center gap-4 flex-1">
-                  <div className="w-14 h-14 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-medium text-lg">
-                    {ranking.user.username[0].toUpperCase()}
-                  </div>
+                  {ranking.user.avatar ? (
+                    <img
+                      src={ranking.user.avatar}
+                      alt={ranking.user.username}
+                      className="w-14 h-14 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center text-white font-medium text-lg">
+                      {ranking.user.username[0].toUpperCase()}
+                    </div>
+                  )}
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-lg text-gray-900 truncate" data-testid={`ranking-username-${index}`}>
-                      {ranking.user.username}
+                      {ranking.user.full_name || ranking.user.username}
                     </h3>
-                    <div className="flex items-center gap-4 text-sm text-gray-500">
-                      <span data-testid={`ranking-quotes-${index}`}>{ranking.quotes_count} {t('quotes')}</span>
-                      <span data-testid={`ranking-followers-${index}`}>{ranking.user.followers_count} {t('followers')}</span>
+                    <p className="text-sm text-gray-500 mb-2">{ranking.user.username}</p>
+                    <div className="flex items-center gap-4 text-sm text-gray-600">
+                      <div className="flex items-center gap-1" data-testid={`ranking-followers-${index}`}>
+                        <Users className="h-4 w-4" />
+                        <span>{ranking.user.followers_count}</span>
+                      </div>
+                      <div className="flex items-center gap-1" data-testid={`ranking-quotes-${index}`}>
+                        <MessageSquare className="h-4 w-4" />
+                        <span>{ranking.quotes_count}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <UserPlus className="h-4 w-4" />
+                        <span>{ranking.user.following_count}</span>
+                      </div>
                     </div>
                   </div>
                 </Link>
