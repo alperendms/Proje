@@ -299,6 +299,34 @@ const AdminPanel = () => {
     }
   };
 
+  // Category Translation Functions
+  const handleOpenTranslation = (category) => {
+    setSelectedCategory(category);
+    setTranslationForm({ language: '', name: '', description: '' });
+    setShowTranslationModal(true);
+  };
+
+  const handleSaveTranslation = async (e) => {
+    e.preventDefault();
+    if (!translationForm.language || !translationForm.name) {
+      toast.error('Language and name are required');
+      return;
+    }
+    try {
+      await api.updateCategoryTranslation(selectedCategory.id, {
+        language: translationForm.language,
+        name: translationForm.name,
+        description: translationForm.description
+      });
+      toast.success('Translation saved');
+      setShowTranslationModal(false);
+      const res = await api.getCategories();
+      setCategories(res.data);
+    } catch (error) {
+      toast.error('Error saving translation');
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
