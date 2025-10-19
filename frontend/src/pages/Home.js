@@ -86,22 +86,22 @@ const Home = ({ user }) => {
               <div className="w-16 h-16 bg-gray-900 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <Layers className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-xl font-semibold mb-3 text-gray-900">Discover Quotes</h3>
-              <p className="text-gray-600">Browse thousands of inspiring quotes from various categories</p>
+              <h3 className="text-xl font-semibold mb-3 text-gray-900">{t('discover_quotes')}</h3>
+              <p className="text-gray-600">{t('discover_quotes_desc')}</p>
             </div>
             <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 text-center" data-testid="step-2">
               <div className="w-16 h-16 bg-gray-900 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <TrendingUp className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-xl font-semibold mb-3 text-gray-900">Share & Create</h3>
-              <p className="text-gray-600">Share your favorite quotes or create your own to inspire others</p>
+              <h3 className="text-xl font-semibold mb-3 text-gray-900">{t('share_create')}</h3>
+              <p className="text-gray-600">{t('share_create_desc')}</p>
             </div>
             <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 text-center" data-testid="step-3">
               <div className="w-16 h-16 bg-gray-900 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <Users className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-xl font-semibold mb-3 text-gray-900">Connect</h3>
-              <p className="text-gray-600">Follow users, save quotes, and build your collection</p>
+              <h3 className="text-xl font-semibold mb-3 text-gray-900">{t('connect')}</h3>
+              <p className="text-gray-600">{t('connect_desc')}</p>
             </div>
           </div>
         </section>
