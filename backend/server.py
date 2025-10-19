@@ -521,6 +521,43 @@ async def get_category(category_id: str):
         category['created_at'] = datetime.fromisoformat(category['created_at'])
     return category
 
+# Category Translation Routes
+@api_router.put("/admin/categories/{category_id}/translations")
+async def update_category_translation(
+    category_id: str, 
+    language: str, 
+    name: str, 
+    description: Optional[str] = None,
+    current_user: User = Depends(get_current_admin)
+):
+    category = await db.categories.find_one({"id": category_id}, {"_id": 0})
+    if not category:
+        raise HTTPException(status_code=404, detail="Category not found")
+    
+    translations = category.get('translations', {})
+    translations[language] = {
+        "name": name,
+        "description": description or ""
+    }
+    
+    await db.categories.update_one(
+        {"id": category_id},
+        {"$set": {"translations": translations}}
+    )
+    return {"message": "Translation updated", "translations": translations}
+
+@api_router.get("/categories/{category_id}/translations")
+async def get_category_translations(category_id: str):
+    category = await db.categories.find_one({"id": category_id}, {"_id": 0})
+    if not category:
+        raise HTTPException(status_code=404, detail="Category not found")
+    return {
+        "id": category['id'],
+        "name": category['name'],
+        "description": category.get('description'),
+        "translations": category.get('translations', {})
+    }
+
 # ============= LIKE/SAVE ROUTES =============
 
 @api_router.post("/quotes/{quote_id}/like")
