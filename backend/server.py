@@ -1194,6 +1194,20 @@ async def update_system_settings(settings_data: SystemSettingsUpdate, current_us
 async def update_user_settings(settings_data: UserSettingsUpdate, current_user: User = Depends(get_current_user)):
     update_data = {k: v for k, v in settings_data.model_dump().items() if v is not None}
     
+    # Check username uniqueness if updating
+    if 'username' in update_data:
+        username = update_data['username']
+        if not username.startswith('@'):
+            username = f'@{username}'
+        update_data['username'] = username
+        
+        existing = await db.users.find_one({
+            "username": username,
+            "id": {"$ne": current_user.id}
+        }, {"_id": 0})
+        if existing:
+            raise HTTPException(status_code=400, detail="Username already taken")
+    
     if update_data:
         await db.users.update_one({"id": current_user.id}, {"$set": update_data})
     
