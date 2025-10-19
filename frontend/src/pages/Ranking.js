@@ -119,7 +119,35 @@ const Ranking = () => {
                     <h3 className="font-semibold text-lg text-gray-900 truncate" data-testid={`ranking-username-${index}`}>
                       {ranking.user.full_name || ranking.user.username}
                     </h3>
-                    <p className="text-sm text-gray-500 mb-2">{ranking.user.username}</p>
+                    <p className="text-sm text-gray-500 mb-1">{ranking.user.username}</p>
+                    
+                    {/* Social Links */}
+                    {ranking.user.social_links && Object.keys(ranking.user.social_links).length > 0 && (
+                      <div className="flex gap-2 mb-2">
+                        {ranking.user.social_links.twitter && (
+                          <a href={ranking.user.social_links.twitter} target="_blank" rel="noopener noreferrer"
+                             onClick={(e) => e.stopPropagation()}
+                             className="text-gray-600 hover:text-blue-500">
+                            <Twitter className="h-3 w-3" />
+                          </a>
+                        )}
+                        {ranking.user.social_links.instagram && (
+                          <a href={ranking.user.social_links.instagram} target="_blank" rel="noopener noreferrer"
+                             onClick={(e) => e.stopPropagation()}
+                             className="text-gray-600 hover:text-pink-500">
+                            <Instagram className="h-3 w-3" />
+                          </a>
+                        )}
+                        {ranking.user.social_links.website && (
+                          <a href={ranking.user.social_links.website} target="_blank" rel="noopener noreferrer"
+                             onClick={(e) => e.stopPropagation()}
+                             className="text-gray-600 hover:text-green-500">
+                            <Globe className="h-3 w-3" />
+                          </a>
+                        )}
+                      </div>
+                    )}
+                    
                     <div className="flex items-center gap-4 text-sm text-gray-600">
                       <div className="flex items-center gap-1" data-testid={`ranking-followers-${index}`}>
                         <Users className="h-4 w-4" />
