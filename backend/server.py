@@ -91,11 +91,16 @@ class UserProfile(BaseModel):
     id: str
     username: str
     email: EmailStr
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
     full_name: Optional[str] = None
     bio: Optional[str] = None
     avatar: Optional[str] = None
     country: Optional[str] = None
     country_code: Optional[str] = None
+    phone: Optional[str] = None
+    phone_country_code: Optional[str] = None
+    language: str = "en"
     social_links: Optional[dict] = {}
     followers_count: int = 0
     following_count: int = 0
