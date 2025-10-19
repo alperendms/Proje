@@ -409,6 +409,126 @@ const AdminPanel = () => {
                 </div>
               </div>
             </TabsContent>
+
+            {/* Blogs */}
+            <TabsContent value="blogs" data-testid="blogs-content">
+              <div className="space-y-6">
+                <form onSubmit={handleSaveBlog} className="space-y-4">
+                  <div>
+                    <Label htmlFor="blog_title">Title</Label>
+                    <Input
+                      id="blog_title"
+                      value={blogForm.title}
+                      onChange={(e) => setBlogForm({ ...blogForm, title: e.target.value })}
+                      placeholder="Blog title"
+                      data-testid="blog-title-input"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="blog_excerpt">Excerpt</Label>
+                    <Input
+                      id="blog_excerpt"
+                      value={blogForm.excerpt}
+                      onChange={(e) => setBlogForm({ ...blogForm, excerpt: e.target.value })}
+                      placeholder="Short description"
+                      data-testid="blog-excerpt-input"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="blog_content">Content</Label>
+                    <textarea
+                      id="blog_content"
+                      value={blogForm.content}
+                      onChange={(e) => setBlogForm({ ...blogForm, content: e.target.value })}
+                      placeholder="Blog content (Markdown supported)"
+                      className="w-full min-h-[200px] p-3 border border-gray-300 rounded-md resize-vertical"
+                      data-testid="blog-content-input"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="blog_image">Featured Image URL</Label>
+                    <Input
+                      id="blog_image"
+                      value={blogForm.featured_image}
+                      onChange={(e) => setBlogForm({ ...blogForm, featured_image: e.target.value })}
+                      placeholder="https://example.com/image.jpg"
+                      data-testid="blog-image-input"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="blog_published"
+                      checked={blogForm.published}
+                      onChange={(e) => setBlogForm({ ...blogForm, published: e.target.checked })}
+                      data-testid="blog-published-checkbox"
+                    />
+                    <Label htmlFor="blog_published">Published</Label>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button type="submit" className="bg-gray-900 hover:bg-gray-800" data-testid="save-blog-btn">
+                      <Plus className="h-4 w-4 mr-2" />
+                      {editingBlog ? 'Update Blog' : 'Create Blog'}
+                    </Button>
+                    {editingBlog && (
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        onClick={() => {
+                          setEditingBlog(null);
+                          setBlogForm({ title: '', content: '', excerpt: '', featured_image: '', published: true });
+                        }}
+                        data-testid="cancel-edit-btn"
+                      >
+                        Cancel
+                      </Button>
+                    )}
+                  </div>
+                </form>
+
+                <div className="space-y-4" data-testid="blogs-list">
+                  {blogs.map((blog) => (
+                    <div key={blog.id} className="p-4 bg-gray-50 rounded-lg" data-testid={`blog-item-${blog.id}`}>
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <h3 className="font-semibold text-gray-900">{blog.title}</h3>
+                            <span className={`px-2 py-1 text-xs rounded ${blog.published ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                              {blog.published ? 'Published' : 'Draft'}
+                            </span>
+                          </div>
+                          {blog.excerpt && <p className="text-sm text-gray-600 mb-2">{blog.excerpt}</p>}
+                          <div className="text-xs text-gray-500">
+                            Created: {new Date(blog.created_at).toLocaleDateString()}
+                            {blog.updated_at !== blog.created_at && (
+                              <span> • Updated: {new Date(blog.updated_at).toLocaleDateString()}</span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex gap-2 ml-4">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleEditBlog(blog)}
+                            data-testid={`edit-blog-${blog.id}`}
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => handleDeleteBlog(blog.id)}
+                            data-testid={`delete-blog-${blog.id}`}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </TabsContent>
           </Tabs>
         </div>
       </div>
