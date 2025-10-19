@@ -22,10 +22,8 @@ const Discover = ({ user }) => {
         response = await api.getMostLiked();
       } else if (activeTab === 'saved') {
         response = await api.getMostSaved();
-      } else if (activeTab === 'viewed') {
+      } else {
         response = await api.getMostViewed();
-      } else if (activeTab === 'my-saved' && user) {
-        response = await api.getUserSaved();
       }
       setQuotes(response?.data || []);
     } catch (error) {
