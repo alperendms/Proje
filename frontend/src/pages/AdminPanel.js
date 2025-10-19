@@ -231,11 +231,14 @@ const AdminPanel = () => {
         {/* Admin Tabs */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
           <Tabs defaultValue="smtp" className="space-y-6">
-            <TabsList data-testid="admin-tabs">
-              <TabsTrigger value="smtp" data-testid="tab-smtp">SMTP Settings</TabsTrigger>
+            <TabsList data-testid="admin-tabs" className="flex-wrap">
+              <TabsTrigger value="smtp" data-testid="tab-smtp">SMTP</TabsTrigger>
+              <TabsTrigger value="system" data-testid="tab-system">System Settings</TabsTrigger>
+              <TabsTrigger value="languages" data-testid="tab-languages">Languages</TabsTrigger>
               <TabsTrigger value="backgrounds" data-testid="tab-backgrounds">Backgrounds</TabsTrigger>
               <TabsTrigger value="categories" data-testid="tab-categories">Categories</TabsTrigger>
               <TabsTrigger value="blogs" data-testid="tab-blogs">Blogs</TabsTrigger>
+              <TabsTrigger value="users" data-testid="tab-users">Users</TabsTrigger>
             </TabsList>
 
             {/* SMTP Settings */}
