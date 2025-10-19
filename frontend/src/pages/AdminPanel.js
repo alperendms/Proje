@@ -998,13 +998,13 @@ const AdminPanel = () => {
           </Tabs>
 
           {/* Translation Modal */}
-          {showTranslationModal && (
+          {showTranslationModal && selectedCategory && (
             <Dialog open={showTranslationModal} onOpenChange={setShowTranslationModal}>
-              <DialogContent>
+              <DialogContent className="max-w-md">
                 <DialogHeader>
-                  <DialogTitle>Translate Category: {selectedCategory?.name}</DialogTitle>
+                  <DialogTitle>Translate Category: {selectedCategory.name}</DialogTitle>
                 </DialogHeader>
-                <form onSubmit={handleSaveTranslation} className="space-y-4">
+                <form onSubmit={handleSaveTranslation} className="space-y-4 mt-4">
                   <div>
                     <Label>Language Code</Label>
                     <Select
@@ -1041,7 +1041,7 @@ const AdminPanel = () => {
                       rows={3}
                     />
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 pt-2">
                     <Button type="submit" className="bg-gray-900 hover:bg-gray-800">
                       Save Translation
                     </Button>
