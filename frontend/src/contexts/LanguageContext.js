@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useGeolocation } from '../hooks/useGeolocation';
+import i18n from '../i18n/config';
+import api from '../utils/api';
 
 const LanguageContext = createContext();
 
@@ -29,6 +31,11 @@ export const LanguageProvider = ({ children, user }) => {
     return geoCountry || 'US';
   });
 
+  // Load translations when language changes
+  useEffect(() => {
+    loadTranslations(currentLanguage);
+  }, [currentLanguage]);
+
   // Update when user changes
   useEffect(() => {
     if (user?.language) {
@@ -41,9 +48,31 @@ export const LanguageProvider = ({ children, user }) => {
     }
   }, [user]);
 
-  const changeLanguage = (newLanguage) => {
+  const loadTranslations = async (lang) => {
+    try {
+      const response = await api.getSiteTranslations(lang);
+      const translations = response.data.translations || {};
+      
+      // Add translations to i18next
+      i18n.addResourceBundle(lang, 'translation', translations, true, true);
+      
+      // Change language in i18next
+      await i18n.changeLanguage(lang);
+      
+      console.log(`✅ Translations loaded for ${lang}:`, Object.keys(translations).length, 'keys');
+    } catch (error) {
+      console.error(`Failed to load translations for ${lang}:`, error);
+      // Fallback to English if translation loading fails
+      if (lang !== 'en') {
+        await i18n.changeLanguage('en');
+      }
+    }
+  };
+
+  const changeLanguage = async (newLanguage) => {
     setCurrentLanguage(newLanguage);
     localStorage.setItem('app_language', newLanguage);
+    await loadTranslations(newLanguage);
   };
 
   const changeCountry = (newCountry) => {
