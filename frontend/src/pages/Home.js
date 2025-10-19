@@ -34,6 +34,14 @@ const Home = ({ user }) => {
     }
   };
 
+  // Get translated category name
+  const getCategoryName = (category) => {
+    if (language === 'en' || !category.translations || !category.translations[language]) {
+      return category.name;
+    }
+    return category.translations[language].name || category.name;
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
