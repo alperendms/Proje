@@ -38,16 +38,18 @@ const AdminPanel = () => {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [statsRes, settingsRes, backgroundsRes, categoriesRes] = await Promise.all([
+      const [statsRes, settingsRes, backgroundsRes, categoriesRes, blogsRes] = await Promise.all([
         api.getAdminStats(),
         api.getAdminSettings(),
         api.getBackgrounds(),
-        api.getCategories()
+        api.getCategories(),
+        api.getBlogs({ published_only: false })
       ]);
       setStats(statsRes.data);
       setSettings(settingsRes.data);
       setBackgrounds(backgroundsRes.data);
       setCategories(categoriesRes.data);
+      setBlogs(blogsRes.data);
       
       setSmtpForm({
         smtp_host: settingsRes.data.smtp_host || '',
