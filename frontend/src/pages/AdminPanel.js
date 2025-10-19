@@ -995,6 +995,63 @@ const AdminPanel = () => {
               </div>
             </TabsContent>
           </Tabs>
+
+          {/* Translation Modal */}
+          {showTranslationModal && (
+            <Dialog open={showTranslationModal} onOpenChange={setShowTranslationModal}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Translate Category: {selectedCategory?.name}</DialogTitle>
+                </DialogHeader>
+                <form onSubmit={handleSaveTranslation} className="space-y-4">
+                  <div>
+                    <Label>Language Code</Label>
+                    <Select
+                      value={translationForm.language}
+                      onValueChange={(value) => setTranslationForm({...translationForm, language: value})}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select language" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {languages.map((lang) => (
+                          <SelectItem key={lang.code} value={lang.code}>
+                            {lang.native_name} ({lang.code})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Translated Name</Label>
+                    <Input
+                      value={translationForm.name}
+                      onChange={(e) => setTranslationForm({...translationForm, name: e.target.value})}
+                      placeholder="Enter translated name"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label>Translated Description</Label>
+                    <Textarea
+                      value={translationForm.description}
+                      onChange={(e) => setTranslationForm({...translationForm, description: e.target.value})}
+                      placeholder="Enter translated description"
+                      rows={3}
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <Button type="submit" className="bg-gray-900 hover:bg-gray-800">
+                      Save Translation
+                    </Button>
+                    <Button type="button" variant="outline" onClick={() => setShowTranslationModal(false)}>
+                      Cancel
+                    </Button>
+                  </div>
+                </form>
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
       </div>
     </div>
