@@ -96,6 +96,8 @@ class Quote(BaseModel):
     author: Optional[str] = None
     category_id: Optional[str] = None
     tags: List[str] = []
+    language: str = "en"
+    country: Optional[str] = None
     likes_count: int = 0
     saves_count: int = 0
     views_count: int = 0
