@@ -237,7 +237,9 @@ const AdminPanel = () => {
       content: blog.content,
       excerpt: blog.excerpt || '',
       featured_image: blog.featured_image || '',
-      published: blog.published
+      image_file: null,
+      published: blog.published,
+      language: blog.language || 'en'
     });
   };
 
