@@ -105,20 +105,22 @@ const Navbar = ({ user, setUser }) => {
 
           {/* Right Side */}
           <div className="flex items-center space-x-3">
-            {/* Language Selector */}
-            <Select value={language} onValueChange={handleLanguageChange}>
-              <SelectTrigger className="w-32" data-testid="language-selector">
-                <Globe className="h-4 w-4 mr-2" />
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {languages.map((lang) => (
-                  <SelectItem key={lang.code} value={lang.code}>
-                    {lang.native_name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {/* Language Selector - Only for non-logged-in users */}
+            {!user && (
+              <Select value={language} onValueChange={handleLanguageChange}>
+                <SelectTrigger className="w-32" data-testid="language-selector">
+                  <Globe className="h-4 w-4 mr-2" />
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {languages.map((lang) => (
+                    <SelectItem key={lang.code} value={lang.code}>
+                      {lang.native_name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
 
             {user ? (
               <>
