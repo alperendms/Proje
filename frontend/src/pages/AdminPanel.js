@@ -527,18 +527,19 @@ const AdminPanel = () => {
                     </Select>
                   </div>
                   <div>
-                    <Label htmlFor="bg_url">Image URL</Label>
+                    <Label htmlFor="bg_file">Upload Image</Label>
                     <Input
-                      id="bg_url"
-                      value={bgForm.url}
-                      onChange={(e) => setBgForm({ ...bgForm, url: e.target.value })}
-                      placeholder="https://example.com/image.jpg"
-                      data-testid="bg-url-input"
+                      id="bg_file"
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => setBgForm({ ...bgForm, file: e.target.files[0] })}
+                      data-testid="bg-file-input"
                     />
+                    <p className="text-xs text-gray-500 mt-1">Upload an image from your device</p>
                   </div>
-                  <Button type="submit" className="bg-gray-900 hover:bg-gray-800" data-testid="add-bg-btn">
+                  <Button type="submit" className="bg-gray-900 hover:bg-gray-800" data-testid="add-bg-btn" disabled={!bgForm.file}>
                     <Plus className="h-4 w-4 mr-2" />
-                    Add Background
+                    Upload Background
                   </Button>
                 </form>
 
