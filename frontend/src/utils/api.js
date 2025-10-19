@@ -58,7 +58,14 @@ export const api = {
   addBackground: (data) => axios.post(`${API_BASE}/admin/backgrounds`, data, { headers: getAuthHeader() }),
   getBackgrounds: (type) => axios.get(`${API_BASE}/backgrounds`, { params: { type } }),
   deleteBackground: (bgId) => axios.delete(`${API_BASE}/admin/backgrounds/${bgId}`, { headers: getAuthHeader() }),
-  getAdminStats: () => axios.get(`${API_BASE}/admin/stats`, { headers: getAuthHeader() })
+  getAdminStats: () => axios.get(`${API_BASE}/admin/stats`, { headers: getAuthHeader() }),
+  
+  // Blogs
+  getBlogs: (params) => axios.get(`${API_BASE}/blogs`, { params }),
+  getBlog: (blogId) => axios.get(`${API_BASE}/blogs/${blogId}`),
+  createBlog: (data) => axios.post(`${API_BASE}/admin/blogs`, data, { headers: getAuthHeader() }),
+  updateBlog: (blogId, data) => axios.put(`${API_BASE}/admin/blogs/${blogId}`, data, { headers: getAuthHeader() }),
+  deleteBlog: (blogId) => axios.delete(`${API_BASE}/admin/blogs/${blogId}`, { headers: getAuthHeader() })
 };
 
 export default api;
