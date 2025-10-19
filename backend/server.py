@@ -1033,17 +1033,17 @@ async def get_home_data(language: Optional[str] = "en"):
     users_count = settings.get('homepage_users_count', 5)
     blogs_count = settings.get('homepage_blogs_count', 4)
     
-    # Trending quotes - filtered by language (last 7 days instead of today)
+    # Trending quotes - ONLY selected language (no fallback)
     week_ago = datetime.now(timezone.utc) - timedelta(days=7)
     quote_query = {
         "created_at": {"$gte": week_ago.isoformat()},
-        "$or": [{"language": language}, {"language": "en"}]
+        "language": language
     }
     trending_quotes = await db.quotes.find(quote_query, {"_id": 0}).sort("views_count", -1).limit(quotes_count).to_list(quotes_count)
     
-    # If no quotes from last week, get any recent quotes
+    # If no quotes from last week, get any recent quotes in selected language
     if not trending_quotes:
-        quote_query = {"$or": [{"language": language}, {"language": "en"}]}
+        quote_query = {"language": language}
         trending_quotes = await db.quotes.find(quote_query, {"_id": 0}).sort("created_at", -1).limit(quotes_count).to_list(quotes_count)
     
     for q in trending_quotes:
@@ -1062,10 +1062,10 @@ async def get_home_data(language: Optional[str] = "en"):
         if isinstance(u['created_at'], str):
             u['created_at'] = datetime.fromisoformat(u['created_at'])
     
-    # Recent blogs - filtered by language
+    # Recent blogs - ONLY selected language (no fallback)
     blog_query = {
         "published": True,
-        "$or": [{"language": language}, {"language": "en"}]
+        "language": language
     }
     blogs = await db.blogs.find(blog_query, {"_id": 0}).sort("created_at", -1).limit(blogs_count).to_list(blogs_count)
     for b in blogs:
