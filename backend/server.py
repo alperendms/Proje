@@ -526,8 +526,6 @@ async def get_quotes(skip: int = 0, limit: int = 20, category_id: Optional[str] 
             query['$and'] = [{'language': query.pop('language')}, search_condition]
         else:
             query.update(search_condition)
-        else:
-            query.update(search_condition)
     
     quotes = await db.quotes.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
     for q in quotes:
