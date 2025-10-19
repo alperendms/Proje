@@ -189,6 +189,33 @@ const Home = ({ user }) => {
                       <p className="text-sm text-gray-500">{trendUser.username}</p>
                     </div>
                     
+                    {/* Social Links */}
+                    {trendUser.social_links && Object.keys(trendUser.social_links).length > 0 && (
+                      <div className="flex gap-2 mb-3">
+                        {trendUser.social_links.twitter && (
+                          <a href={trendUser.social_links.twitter} target="_blank" rel="noopener noreferrer" 
+                             onClick={(e) => e.stopPropagation()}
+                             className="text-gray-600 hover:text-blue-500">
+                            <Twitter className="h-4 w-4" />
+                          </a>
+                        )}
+                        {trendUser.social_links.instagram && (
+                          <a href={trendUser.social_links.instagram} target="_blank" rel="noopener noreferrer"
+                             onClick={(e) => e.stopPropagation()}
+                             className="text-gray-600 hover:text-pink-500">
+                            <Instagram className="h-4 w-4" />
+                          </a>
+                        )}
+                        {trendUser.social_links.website && (
+                          <a href={trendUser.social_links.website} target="_blank" rel="noopener noreferrer"
+                             onClick={(e) => e.stopPropagation()}
+                             className="text-gray-600 hover:text-green-500">
+                            <Globe className="h-4 w-4" />
+                          </a>
+                        )}
+                      </div>
+                    )}
+                    
                     <div className="flex items-center gap-4 text-sm text-gray-600">
                       <div className="flex items-center gap-1">
                         <Users className="h-4 w-4" />
