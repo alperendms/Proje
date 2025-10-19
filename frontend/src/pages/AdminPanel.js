@@ -565,9 +565,24 @@ const AdminPanel = () => {
                         <div>
                           <div className="font-semibold text-gray-900">{cat.name}</div>
                           {cat.description && <div className="text-sm text-gray-600">{cat.description}</div>}
+                          {cat.translations && Object.keys(cat.translations).length > 0 && (
+                            <div className="text-xs text-blue-600 mt-1">
+                              Translations: {Object.keys(cat.translations).join(', ')}
+                            </div>
+                          )}
                         </div>
                       </div>
-                      <div className="text-sm text-gray-500">{cat.quotes_count} quotes</div>
+                      <div className="flex items-center gap-3">
+                        <div className="text-sm text-gray-500">{cat.quotes_count} quotes</div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleOpenTranslation(cat)}
+                        >
+                          <Globe className="h-4 w-4 mr-1" />
+                          Translate
+                        </Button>
+                      </div>
                     </div>
                   ))}
                 </div>
