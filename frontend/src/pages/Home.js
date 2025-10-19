@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { ChevronDown, TrendingUp, Users, Layers } from 'lucide-react';
 import api from '../utils/api';
 import QuoteCard from '../components/QuoteCard';
 import { Button } from '../components/ui/button';
+import { useLanguage } from '../contexts/LanguageContext';
 import {
   Accordion,
   AccordionContent,
@@ -14,16 +15,17 @@ import {
 
 const Home = ({ user }) => {
   const { t } = useTranslation();
+  const { language } = useLanguage();
   const [homeData, setHomeData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadHomeData();
-  }, []);
+  }, [language]);
 
   const loadHomeData = async () => {
     try {
-      const response = await api.getHomeData();
+      const response = await api.getHomeData({ language });
       setHomeData(response.data);
     } catch (error) {
       console.error('Error loading home data:', error);
