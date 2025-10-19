@@ -506,7 +506,7 @@ async def seed_database():
     print(f"   - {len(QUOTES_EN)} quotes created")
     print(f"   - {len(BLOGS_EN)} blogs created")
     print(f"   - {len(SITE_TRANSLATIONS)} language translations created")
-    print(f"   - 1 sample user created (@quotelover / user123)")
+    print("   - 1 sample user created (@quotelover / user123)")
 
 if __name__ == "__main__":
     asyncio.run(seed_database())
