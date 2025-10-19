@@ -39,17 +39,19 @@ const Discover = ({ user }) => {
         <h1 className="text-4xl font-bold mb-8 text-gray-900" data-testid="discover-title">{t('discover')}</h1>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="bg-white rounded-lg p-1 border border-gray-200" data-testid="discover-tabs">
-            <TabsTrigger value="liked" className="data-[state=active]:bg-gray-900 data-[state=active]:text-white" data-testid="tab-liked">
-              {t('most_liked')}
-            </TabsTrigger>
-            <TabsTrigger value="saved" className="data-[state=active]:bg-gray-900 data-[state=active]:text-white" data-testid="tab-saved">
-              {t('most_saved')}
-            </TabsTrigger>
-            <TabsTrigger value="viewed" className="data-[state=active]:bg-gray-900 data-[state=active]:text-white" data-testid="tab-viewed">
-              {t('most_viewed')}
-            </TabsTrigger>
-          </TabsList>
+          <div className="flex justify-center">
+            <TabsList className="bg-white rounded-lg p-1 border border-gray-200" data-testid="discover-tabs">
+              <TabsTrigger value="liked" className="data-[state=active]:bg-gray-900 data-[state=active]:text-white" data-testid="tab-liked">
+                {t('most_liked')}
+              </TabsTrigger>
+              <TabsTrigger value="saved" className="data-[state=active]:bg-gray-900 data-[state=active]:text-white" data-testid="tab-saved">
+                {t('most_saved')}
+              </TabsTrigger>
+              <TabsTrigger value="viewed" className="data-[state=active]:bg-gray-900 data-[state=active]:text-white" data-testid="tab-viewed">
+                {t('most_viewed')}
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value={activeTab} data-testid={`tab-content-${activeTab}`}>
             {loading ? (
