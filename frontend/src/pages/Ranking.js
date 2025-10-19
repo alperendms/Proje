@@ -7,24 +7,30 @@ import api from '../utils/api';
 
 const Ranking = () => {
   const { t } = useTranslation();
+  const { language } = useLanguage();
   const [period, setPeriod] = useState('daily');
+  const [searchQuery, setSearchQuery] = useState('');
   const [rankings, setRankings] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadRankings();
-  }, [period]);
+  }, [period, language]);
 
   const loadRankings = async () => {
     setLoading(true);
     try {
-      const response = await api.getRanking(period);
+      const response = await api.getRanking(period, language, searchQuery);
       setRankings(response.data);
     } catch (error) {
       console.error('Error loading rankings:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSearch = () => {
+    loadRankings();
   };
 
   if (loading) {
