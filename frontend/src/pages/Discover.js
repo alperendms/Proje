@@ -51,11 +51,6 @@ const Discover = ({ user }) => {
             <TabsTrigger value="viewed" className="data-[state=active]:bg-gray-900 data-[state=active]:text-white" data-testid="tab-viewed">
               {t('most_viewed')}
             </TabsTrigger>
-            {user && (
-              <TabsTrigger value="my-saved" className="data-[state=active]:bg-gray-900 data-[state=active]:text-white" data-testid="tab-my-saved">
-                {t('my_saved')}
-              </TabsTrigger>
-            )}
           </TabsList>
 
           <TabsContent value={activeTab} data-testid={`tab-content-${activeTab}`}>
