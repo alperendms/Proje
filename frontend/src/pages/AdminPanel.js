@@ -683,52 +683,287 @@ const AdminPanel = () => {
 
             {/* System Settings */}
             <TabsContent value="system" data-testid="system-content">
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">System Configuration</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label>Homepage Quotes Count</Label>
-                    <Input type="number" placeholder="5" />
-                  </div>
-                  <div>
-                    <Label>Homepage Blogs Count</Label>
-                    <Input type="number" placeholder="4" />
+              <form onSubmit={handleSaveSystemSettings} className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">Homepage Content Settings</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>Homepage Quotes Count</Label>
+                      <Input 
+                        type="number" 
+                        value={systemForm.homepage_quotes_count}
+                        onChange={(e) => setSystemForm({...systemForm, homepage_quotes_count: parseInt(e.target.value)})}
+                      />
+                    </div>
+                    <div>
+                      <Label>Homepage Categories Count</Label>
+                      <Input 
+                        type="number" 
+                        value={systemForm.homepage_categories_count}
+                        onChange={(e) => setSystemForm({...systemForm, homepage_categories_count: parseInt(e.target.value)})}
+                      />
+                    </div>
+                    <div>
+                      <Label>Homepage Users Count</Label>
+                      <Input 
+                        type="number" 
+                        value={systemForm.homepage_users_count}
+                        onChange={(e) => setSystemForm({...systemForm, homepage_users_count: parseInt(e.target.value)})}
+                      />
+                    </div>
+                    <div>
+                      <Label>Homepage Blogs Count</Label>
+                      <Input 
+                        type="number" 
+                        value={systemForm.homepage_blogs_count}
+                        onChange={(e) => setSystemForm({...systemForm, homepage_blogs_count: parseInt(e.target.value)})}
+                      />
+                    </div>
                   </div>
                 </div>
+
                 <div className="border-t pt-4">
-                  <h4 className="font-semibold mb-2">reCAPTCHA Settings</h4>
-                  <div className="space-y-2">
-                    <Input placeholder="Site Key" />
-                    <Input placeholder="Secret Key" />
+                  <h4 className="font-semibold mb-4 flex items-center gap-2">
+                    <Globe className="h-5 w-5" />
+                    Google reCAPTCHA Settings
+                  </h4>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Switch
+                        checked={systemForm.recaptcha_enabled}
+                        onCheckedChange={(checked) => setSystemForm({...systemForm, recaptcha_enabled: checked})}
+                      />
+                      <Label>Enable reCAPTCHA</Label>
+                    </div>
+                    <Input 
+                      placeholder="Site Key" 
+                      value={systemForm.recaptcha_site_key}
+                      onChange={(e) => setSystemForm({...systemForm, recaptcha_site_key: e.target.value})}
+                    />
+                    <Input 
+                      placeholder="Secret Key" 
+                      type="password"
+                      value={systemForm.recaptcha_secret_key}
+                      onChange={(e) => setSystemForm({...systemForm, recaptcha_secret_key: e.target.value})}
+                    />
                   </div>
                 </div>
+
                 <div className="border-t pt-4">
-                  <h4 className="font-semibold mb-2">Twilio SMS Settings</h4>
-                  <div className="space-y-2">
-                    <Input placeholder="Account SID" />
-                    <Input placeholder="Auth Token" />
-                    <Input placeholder="Phone Number" />
+                  <h4 className="font-semibold mb-4 flex items-center gap-2">
+                    <MessageSquare className="h-5 w-5" />
+                    Twilio SMS Settings
+                  </h4>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Switch
+                        checked={systemForm.sms_enabled}
+                        onCheckedChange={(checked) => setSystemForm({...systemForm, sms_enabled: checked})}
+                      />
+                      <Label>Enable SMS</Label>
+                    </div>
+                    <Input 
+                      placeholder="Account SID" 
+                      value={systemForm.twilio_account_sid}
+                      onChange={(e) => setSystemForm({...systemForm, twilio_account_sid: e.target.value})}
+                    />
+                    <Input 
+                      placeholder="Auth Token" 
+                      type="password"
+                      value={systemForm.twilio_auth_token}
+                      onChange={(e) => setSystemForm({...systemForm, twilio_auth_token: e.target.value})}
+                    />
+                    <Input 
+                      placeholder="Phone Number (e.g., +1234567890)" 
+                      value={systemForm.twilio_phone_number}
+                      onChange={(e) => setSystemForm({...systemForm, twilio_phone_number: e.target.value})}
+                    />
                   </div>
                 </div>
-                <Button>Save System Settings</Button>
-              </div>
+
+                <div className="border-t pt-4">
+                  <h4 className="font-semibold mb-4 flex items-center gap-2">
+                    <SettingsIcon className="h-5 w-5" />
+                    Email/SMTP Settings
+                  </h4>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Switch
+                        checked={systemForm.email_enabled}
+                        onCheckedChange={(checked) => setSystemForm({...systemForm, email_enabled: checked})}
+                      />
+                      <Label>Enable Email</Label>
+                    </div>
+                    <Input 
+                      placeholder="SMTP Host" 
+                      value={systemForm.smtp_host}
+                      onChange={(e) => setSystemForm({...systemForm, smtp_host: e.target.value})}
+                    />
+                    <Input 
+                      placeholder="SMTP Port" 
+                      type="number"
+                      value={systemForm.smtp_port}
+                      onChange={(e) => setSystemForm({...systemForm, smtp_port: parseInt(e.target.value)})}
+                    />
+                    <Input 
+                      placeholder="SMTP User" 
+                      value={systemForm.smtp_user}
+                      onChange={(e) => setSystemForm({...systemForm, smtp_user: e.target.value})}
+                    />
+                    <Input 
+                      placeholder="SMTP Password" 
+                      type="password"
+                      value={systemForm.smtp_password}
+                      onChange={(e) => setSystemForm({...systemForm, smtp_password: e.target.value})}
+                    />
+                    <Input 
+                      placeholder="From Email" 
+                      value={systemForm.smtp_from}
+                      onChange={(e) => setSystemForm({...systemForm, smtp_from: e.target.value})}
+                    />
+                  </div>
+                </div>
+
+                <Button type="submit" className="bg-gray-900 hover:bg-gray-800">
+                  <SettingsIcon className="h-4 w-4 mr-2" />
+                  Save System Settings
+                </Button>
+              </form>
             </TabsContent>
 
             {/* Languages */}
             <TabsContent value="languages" data-testid="languages-content">
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Language Management</h3>
-                <p className="text-sm text-gray-600">20 languages are pre-configured. Add or edit as needed.</p>
-                <Button><Plus className="h-4 w-4 mr-2" />Add Language</Button>
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-semibold mb-2">Language Management</h3>
+                  <p className="text-sm text-gray-600 mb-4">Manage supported languages for the platform</p>
+                </div>
+
+                <form onSubmit={handleAddLanguage} className="bg-gray-50 p-4 rounded-lg space-y-3">
+                  <h4 className="font-semibold">{editingLanguage ? 'Edit Language' : 'Add New Language'}</h4>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div>
+                      <Label>Language Code</Label>
+                      <Input
+                        placeholder="en"
+                        value={languageForm.code}
+                        onChange={(e) => setLanguageForm({...languageForm, code: e.target.value})}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label>English Name</Label>
+                      <Input
+                        placeholder="English"
+                        value={languageForm.name}
+                        onChange={(e) => setLanguageForm({...languageForm, name: e.target.value})}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label>Native Name</Label>
+                      <Input
+                        placeholder="English"
+                        value={languageForm.native_name}
+                        onChange={(e) => setLanguageForm({...languageForm, native_name: e.target.value})}
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      checked={languageForm.enabled}
+                      onCheckedChange={(checked) => setLanguageForm({...languageForm, enabled: checked})}
+                    />
+                    <Label>Enabled</Label>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button type="submit" className="bg-gray-900 hover:bg-gray-800">
+                      <Plus className="h-4 w-4 mr-2" />
+                      {editingLanguage ? 'Update' : 'Add'} Language
+                    </Button>
+                    {editingLanguage && (
+                      <Button 
+                        type="button" 
+                        variant="outline"
+                        onClick={() => {
+                          setEditingLanguage(null);
+                          setLanguageForm({ code: '', name: '', native_name: '', enabled: true });
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                    )}
+                  </div>
+                </form>
+
+                <div className="space-y-2">
+                  <h4 className="font-semibold">Existing Languages ({languages.length})</h4>
+                  <div className="grid gap-2">
+                    {languages.map((lang) => (
+                      <div key={lang.id} className="flex items-center justify-between p-3 bg-white border rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <span className="font-mono font-bold text-lg">{lang.code}</span>
+                          <div>
+                            <p className="font-medium">{lang.native_name}</p>
+                            <p className="text-sm text-gray-500">{lang.name}</p>
+                          </div>
+                          {lang.enabled ? (
+                            <span className="text-xs px-2 py-1 bg-green-100 text-green-800 rounded">Enabled</span>
+                          ) : (
+                            <span className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded">Disabled</span>
+                          )}
+                        </div>
+                        <div className="flex gap-2">
+                          <Button size="sm" variant="outline" onClick={() => handleEditLanguage(lang)}>
+                            Edit
+                          </Button>
+                          <Button size="sm" variant="destructive" onClick={() => handleDeleteLanguage(lang.id)}>
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </TabsContent>
 
             {/* Users */}
             <TabsContent value="users" data-testid="users-content">
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold">User Management</h3>
-                <p className="text-sm text-gray-600">Manage users, scores, and permissions.</p>
-                <Button>View All Users</Button>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-semibold">User Management</h3>
+                    <p className="text-sm text-gray-600">Manage users, scores, and permissions</p>
+                  </div>
+                  <Button onClick={loadUsers}>
+                    <Users className="h-4 w-4 mr-2" />
+                    Load Users
+                  </Button>
+                </div>
+
+                {users.length > 0 && (
+                  <div className="space-y-2">
+                    {users.map((user) => (
+                      <div key={user.id} className="flex items-center justify-between p-4 bg-white border rounded-lg">
+                        <div>
+                          <p className="font-semibold">{user.username}</p>
+                          <p className="text-sm text-gray-600">{user.email}</p>
+                          <div className="flex gap-4 mt-1 text-xs text-gray-500">
+                            <span>Quotes: {user.quotes_count}</span>
+                            <span>Followers: {user.followers_count}</span>
+                            <span>Score: {user.score}</span>
+                            {user.is_admin && <span className="text-blue-600 font-semibold">ADMIN</span>}
+                          </div>
+                        </div>
+                        <Button size="sm" variant="destructive" onClick={() => handleDeleteUser(user.id)} disabled={user.is_admin}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </TabsContent>
           </Tabs>
