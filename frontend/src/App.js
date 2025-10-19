@@ -71,6 +71,8 @@ function App() {
             <Route path="/create" element={user ? <CreateQuote user={user} /> : <Navigate to="/auth" />} />
             <Route path="/messages" element={user ? <Messages user={user} /> : <Navigate to="/auth" />} />
             <Route path="/messages/:userId" element={user ? <Messages user={user} /> : <Navigate to="/auth" />} />
+            <Route path="/settings" element={user ? <Settings user={user} setUser={setUser} /> : <Navigate to="/auth" />} />
+            <Route path="/notifications" element={user ? <Notifications user={user} /> : <Navigate to="/auth" />} />
             <Route path="/admin" element={user?.is_admin ? <AdminPanel /> : <Navigate to="/" />} />
             <Route path="/quote/:quoteId" element={<QuoteDetail user={user} />} />
             <Route path="/blogs" element={<Blogs />} />
