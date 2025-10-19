@@ -170,6 +170,46 @@ const Home = ({ user }) => {
           </section>
         )}
 
+        {/* Recent Blogs */}
+        {homeData?.recent_blogs && homeData.recent_blogs.length > 0 && (
+          <section className="space-y-6" data-testid="recent-blogs-section">
+            <div className="flex items-center justify-between">
+              <h2 className="text-3xl font-bold text-gray-900">Latest from Blog</h2>
+              <Link to="/blogs" data-testid="view-all-blogs">
+                <Button variant="outline">View All</Button>
+              </Link>
+            </div>
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {homeData.recent_blogs.map((blog) => (
+                <Link
+                  key={blog.id}
+                  to={`/blogs/${blog.id}`}
+                  className="group bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md hover:border-gray-200"
+                  data-testid={`blog-${blog.id}`}
+                >
+                  {blog.featured_image && (
+                    <div className="aspect-video overflow-hidden">
+                      <img
+                        src={blog.featured_image}
+                        alt={blog.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                  )}
+                  <div className="p-4">
+                    <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-gray-700">
+                      {blog.title}
+                    </h3>
+                    {blog.excerpt && (
+                      <p className="text-sm text-gray-600 line-clamp-2">{blog.excerpt}</p>
+                    )}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
         {/* FAQ Section */}
         <section className="space-y-6 max-w-3xl mx-auto" data-testid="faq-section">
           <h2 className="text-3xl font-bold text-center text-gray-900">{t('faq')}</h2>
