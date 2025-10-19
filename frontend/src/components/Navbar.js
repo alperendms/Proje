@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { MessageSquare, Bell, User, LogOut, Settings, Plus, FileEdit } from 'lucide-react';
@@ -9,7 +10,6 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from './ui/dropdown-menu';
-import { useEffect, useState } from 'react';
 import { api } from '../utils/api';
 
 const Navbar = ({ user, setUser }) => {
