@@ -294,14 +294,6 @@ const AdminPanel = () => {
       toast.error('Error deleting user');
     }
   };
-    setBlogForm({
-      title: blog.title,
-      content: blog.content,
-      excerpt: blog.excerpt || '',
-      featured_image: blog.featured_image || '',
-      published: blog.published
-    });
-  };
 
   if (loading) {
     return (
