@@ -430,15 +430,22 @@ async def get_quotes(skip: int = 0, limit: int = 20, category_id: Optional[str] 
     
     # Language filtering: show user's language + English (default)
     if language:
-        query['$or'] = [{'language': language}, {'language': 'en'}]
+        if 'user_id' not in query:  # Don't apply language filter when viewing specific user's quotes
+            query['$or'] = [{'language': language}, {'language': 'en'}]
     
     if search:
-        search_query = {
+        search_condition = {
             '$or': [
                 {'content': {'$regex': search, '$options': 'i'}},
                 {'author': {'$regex': search, '$options': 'i'}},
-            {'tags': {'$in': [re.compile(search, re.IGNORECASE)]}}
-        ]
+                {'tags': {'$in': [re.compile(search, re.IGNORECASE)]}}
+            ]
+        }
+        if '$or' in query:
+            # Merge language filter with search filter
+            query = {'$and': [{'$or': query['$or']}, search_condition]}
+        else:
+            query.update(search_condition)
     
     quotes = await db.quotes.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
     for q in quotes:
