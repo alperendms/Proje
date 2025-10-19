@@ -149,6 +149,11 @@ class CategoryCreate(BaseModel):
     parent_id: Optional[str] = None
     icon: Optional[str] = None
 
+class CategoryUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    icon: Optional[str] = None
+
 class Message(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
