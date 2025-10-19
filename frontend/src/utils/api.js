@@ -65,7 +65,35 @@ export const api = {
   getBlog: (blogId) => axios.get(`${API_BASE}/blogs/${blogId}`),
   createBlog: (data) => axios.post(`${API_BASE}/admin/blogs`, data, { headers: getAuthHeader() }),
   updateBlog: (blogId, data) => axios.put(`${API_BASE}/admin/blogs/${blogId}`, data, { headers: getAuthHeader() }),
-  deleteBlog: (blogId) => axios.delete(`${API_BASE}/admin/blogs/${blogId}`, { headers: getAuthHeader() })
+  deleteBlog: (blogId) => axios.delete(`${API_BASE}/admin/blogs/${blogId}`, { headers: getAuthHeader() }),
+  
+  // Languages
+  getLanguages: () => axios.get(`${API_BASE}/languages`),
+  createLanguage: (data) => axios.post(`${API_BASE}/admin/languages`, data, { headers: getAuthHeader() }),
+  updateLanguage: (langId, data) => axios.put(`${API_BASE}/admin/languages/${langId}`, data, { headers: getAuthHeader() }),
+  deleteLanguage: (langId) => axios.delete(`${API_BASE}/admin/languages/${langId}`, { headers: getAuthHeader() }),
+  
+  // Notifications
+  getNotifications: () => axios.get(`${API_BASE}/notifications`, { headers: getAuthHeader() }),
+  markNotificationRead: (notificationId) => axios.put(`${API_BASE}/notifications/${notificationId}/read`, {}, { headers: getAuthHeader() }),
+  broadcastNotification: (data) => axios.post(`${API_BASE}/admin/notifications/broadcast`, data, { headers: getAuthHeader() }),
+  
+  // Settings
+  getSystemSettings: () => axios.get(`${API_BASE}/settings/system`),
+  updateSystemSettings: (data) => axios.put(`${API_BASE}/admin/settings/system`, data, { headers: getAuthHeader() }),
+  updateUserSettings: (data) => axios.put(`${API_BASE}/settings/user`, data, { headers: getAuthHeader() }),
+  
+  // Share
+  getShareData: (quoteId) => axios.get(`${API_BASE}/quotes/${quoteId}/share`),
+  
+  // Admin Management
+  getAllUsers: (params) => axios.get(`${API_BASE}/admin/users`, { params, headers: getAuthHeader() }),
+  updateUserScore: (userId, score) => axios.put(`${API_BASE}/admin/users/${userId}/score`, { score }, { headers: getAuthHeader() }),
+  deleteUser: (userId) => axios.delete(`${API_BASE}/admin/users/${userId}`, { headers: getAuthHeader() }),
+  getAllMessages: (params) => axios.get(`${API_BASE}/admin/messages`, { params, headers: getAuthHeader() }),
+  deleteMessageAdmin: (messageId) => axios.delete(`${API_BASE}/admin/messages/${messageId}`, { headers: getAuthHeader() }),
+  getAllQuotesAdmin: (params) => axios.get(`${API_BASE}/admin/quotes`, { params, headers: getAuthHeader() }),
+  deleteQuoteAdmin: (quoteId) => axios.delete(`${API_BASE}/admin/quotes/${quoteId}`, { headers: getAuthHeader() })
 };
 
 export default api;
