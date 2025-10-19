@@ -820,10 +820,19 @@ async def get_home_data():
         if isinstance(u['created_at'], str):
             u['created_at'] = datetime.fromisoformat(u['created_at'])
     
+    # Recent blogs
+    blogs = await db.blogs.find({"published": True}, {"_id": 0}).sort("created_at", -1).limit(4).to_list(4)
+    for b in blogs:
+        if isinstance(b['created_at'], str):
+            b['created_at'] = datetime.fromisoformat(b['created_at'])
+        if isinstance(b['updated_at'], str):
+            b['updated_at'] = datetime.fromisoformat(b['updated_at'])
+    
     return {
         "trending_quotes": trending_quotes,
         "trending_categories": categories,
-        "trending_users": users
+        "trending_users": users,
+        "recent_blogs": blogs
     }
 
 app.include_router(api_router)
