@@ -309,14 +309,14 @@ const Settings = ({ user, setUser }) => {
               <div>
                 <Label htmlFor="language">Language</Label>
                 <Select 
-                  value={formData.language} 
+                  value={formData.language || 'en'} 
                   onValueChange={(value) => setFormData({ ...formData, language: value })}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select your language" />
                   </SelectTrigger>
                   <SelectContent>
-                    {languages.map((lang) => (
+                    {languages.filter(lang => lang.enabled).map((lang) => (
                       <SelectItem key={lang.code} value={lang.code}>
                         {lang.native_name}
                       </SelectItem>
