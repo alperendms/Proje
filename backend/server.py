@@ -1292,6 +1292,224 @@ async def delete_quote_admin(quote_id: str, current_user: User = Depends(get_cur
     
     return {"message": "Quote deleted"}
 
+# ============= FILE UPLOAD ENDPOINTS =============
+
+@api_router.post("/upload/avatar")
+async def upload_avatar(file: UploadFile = File(...), current_user: User = Depends(get_current_user)):
+    if not file.content_type.startswith('image/'):
+        raise HTTPException(status_code=400, detail="File must be an image")
+    
+    # Generate unique filename
+    ext = file.filename.split('.')[-1]
+    filename = f"{current_user.id}_{uuid.uuid4()}.{ext}"
+    filepath = UPLOAD_DIR / 'avatars' / filename
+    
+    # Save file
+    async with aiofiles.open(filepath, 'wb') as f:
+        content = await file.read()
+        await f.write(content)
+    
+    # Update user avatar
+    avatar_url = f"/uploads/avatars/{filename}"
+    await db.users.update_one({"id": current_user.id}, {"$set": {"avatar": avatar_url}})
+    
+    return {"avatar_url": avatar_url}
+
+@api_router.post("/admin/upload/background")
+async def upload_background(
+    file: UploadFile = File(...),
+    type: str = Form(...),
+    current_user: User = Depends(get_current_admin)
+):
+    if not file.content_type.startswith('image/'):
+        raise HTTPException(status_code=400, detail="File must be an image")
+    
+    if type not in ['story', 'post']:
+        raise HTTPException(status_code=400, detail="Type must be 'story' or 'post'")
+    
+    # Generate unique filename
+    ext = file.filename.split('.')[-1]
+    filename = f"bg_{type}_{uuid.uuid4()}.{ext}"
+    filepath = UPLOAD_DIR / 'backgrounds' / filename
+    
+    # Save file
+    async with aiofiles.open(filepath, 'wb') as f:
+        content = await file.read()
+        await f.write(content)
+    
+    # Create background record
+    bg_url = f"/uploads/backgrounds/{filename}"
+    bg = BackgroundImage(type=type, url=bg_url)
+    doc = bg.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    await db.backgrounds.insert_one(doc)
+    
+    return bg
+
+@api_router.post("/admin/upload/blog-image")
+async def upload_blog_image(
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_admin)
+):
+    if not file.content_type.startswith('image/'):
+        raise HTTPException(status_code=400, detail="File must be an image")
+    
+    # Generate unique filename
+    ext = file.filename.split('.')[-1]
+    filename = f"blog_{uuid.uuid4()}.{ext}"
+    filepath = UPLOAD_DIR / 'blogs' / filename
+    
+    # Save file
+    async with aiofiles.open(filepath, 'wb') as f:
+        content = await file.read()
+        await f.write(content)
+    
+    return {"image_url": f"/uploads/blogs/{filename}"}
+
+# ============= CATEGORY UPDATE ENDPOINT =============
+
+@api_router.put("/admin/categories/{category_id}")
+async def update_category(
+    category_id: str,
+    category_data: CategoryUpdate,
+    current_user: User = Depends(get_current_admin)
+):
+    update_data = {k: v for k, v in category_data.model_dump().items() if v is not None}
+    
+    if 'name' in update_data:
+        update_data['slug'] = update_data['name'].lower().replace(" ", "-")
+    
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No data to update")
+    
+    result = await db.categories.update_one({"id": category_id}, {"$set": update_data})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Category not found")
+    
+    return {"message": "Category updated"}
+
+# ============= USER UPDATE ENDPOINT (ADMIN) =============
+
+@api_router.put("/admin/users/{user_id}")
+async def update_user_admin(
+    user_id: str,
+    user_data: UserUpdate,
+    current_user: User = Depends(get_current_admin)
+):
+    update_data = {k: v for k, v in user_data.model_dump().items() if v is not None}
+    
+    # Check username uniqueness if updating
+    if 'username' in update_data:
+        username = update_data['username']
+        if not username.startswith('@'):
+            username = f'@{username}'
+        update_data['username'] = username
+        
+        existing = await db.users.find_one({
+            "username": username,
+            "id": {"$ne": user_id}
+        }, {"_id": 0})
+        if existing:
+            raise HTTPException(status_code=400, detail="Username already exists")
+    
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No data to update")
+    
+    result = await db.users.update_one({"id": user_id}, {"$set": update_data})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    return {"message": "User updated"}
+
+# ============= SITE TRANSLATIONS =============
+
+@api_router.get("/translations/{language_code}")
+async def get_site_translations(language_code: str):
+    translation = await db.site_translations.find_one({"language_code": language_code}, {"_id": 0})
+    if not translation:
+        return {"language_code": language_code, "translations": {}}
+    if isinstance(translation.get('created_at'), str):
+        translation['created_at'] = datetime.fromisoformat(translation['created_at'])
+    if isinstance(translation.get('updated_at'), str):
+        translation['updated_at'] = datetime.fromisoformat(translation['updated_at'])
+    return translation
+
+@api_router.put("/admin/translations/{language_code}")
+async def update_site_translations(
+    language_code: str,
+    translation_data: SiteTranslationUpdate,
+    current_user: User = Depends(get_current_admin)
+):
+    update_data = {
+        "language_code": language_code,
+        "translations": translation_data.translations,
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.site_translations.update_one(
+        {"language_code": language_code},
+        {"$set": update_data},
+        upsert=True
+    )
+    
+    return {"message": "Translations updated"}
+
+# ============= GET TRANSLATION KEYS FOR ADMIN =============
+
+@api_router.get("/admin/translation-keys")
+async def get_translation_keys(current_user: User = Depends(get_current_admin)):
+    """Returns all translatable keys across the site"""
+    keys = {
+        "navigation": ["home", "explore", "categories", "discover", "ranking", "blogs", "profile", "settings", "admin_panel", "logout", "login", "create_quote", "messages", "notifications"],
+        "home_page": ["app_name", "start_sharing", "how_it_works", "discover_quotes", "share_create", "connect", "trending_quotes", "trending_categories", "trending_users", "latest_from_blog", "faq"],
+        "explore_page": ["search_placeholder", "category", "search", "no_quotes_found"],
+        "discover_page": ["most_liked", "most_saved", "most_viewed"],
+        "profile_page": ["quotes", "likes", "saved", "followers", "following", "score", "follow", "unfollow", "message"],
+        "quote_actions": ["like", "save", "share", "copy", "download", "delete", "edit"],
+        "footer": ["about", "contact", "privacy", "terms", "help"],
+        "common": ["loading", "error", "success", "cancel", "submit", "save", "delete", "edit", "view_more", "view_all"]
+    }
+    return keys
+
+# ============= USER QUOTES WITH FILTERING =============
+
+@api_router.get("/users/{user_id}/quotes")
+async def get_user_quotes(
+    user_id: str,
+    sort_by: Optional[str] = "recent"  # recent, most_liked, most_saved, most_viewed
+):
+    query = {"user_id": user_id}
+    
+    sort_field = "created_at"
+    if sort_by == "most_liked":
+        sort_field = "likes_count"
+    elif sort_by == "most_saved":
+        sort_field = "saves_count"
+    elif sort_by == "most_viewed":
+        sort_field = "views_count"
+    
+    quotes = await db.quotes.find(query, {"_id": 0}).sort(sort_field, -1).to_list(1000)
+    for q in quotes:
+        if isinstance(q['created_at'], str):
+            q['created_at'] = datetime.fromisoformat(q['created_at'])
+    return quotes
+
+# ============= USER LIKED QUOTES =============
+
+@api_router.get("/users/{user_id}/liked")
+async def get_user_liked_quotes(user_id: str):
+    likes = await db.likes.find({"user_id": user_id}, {"_id": 0}).to_list(1000)
+    quote_ids = [like['quote_id'] for like in likes]
+    
+    if not quote_ids:
+        return []
+    
+    quotes = await db.quotes.find({"id": {"$in": quote_ids}}, {"_id": 0}).to_list(1000)
+    for q in quotes:
+        if isinstance(q['created_at'], str):
+            q['created_at'] = datetime.fromisoformat(q['created_at'])
+    return quotes
+
 app.include_router(api_router)
 
 app.add_middleware(
