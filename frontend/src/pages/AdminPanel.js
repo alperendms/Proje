@@ -234,6 +234,7 @@ const AdminPanel = () => {
               <TabsTrigger value="smtp" data-testid="tab-smtp">SMTP Settings</TabsTrigger>
               <TabsTrigger value="backgrounds" data-testid="tab-backgrounds">Backgrounds</TabsTrigger>
               <TabsTrigger value="categories" data-testid="tab-categories">Categories</TabsTrigger>
+              <TabsTrigger value="blogs" data-testid="tab-blogs">Blogs</TabsTrigger>
             </TabsList>
 
             {/* SMTP Settings */}
