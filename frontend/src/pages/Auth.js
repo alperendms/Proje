@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -8,12 +8,43 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../components/ui/select';
+
+const countryCodes = [
+  { code: '+1', country: 'US/Canada' },
+  { code: '+44', country: 'UK' },
+  { code: '+90', country: 'Turkey' },
+  { code: '+49', country: 'Germany' },
+  { code: '+33', country: 'France' },
+  { code: '+34', country: 'Spain' },
+  { code: '+39', country: 'Italy' },
+  { code: '+31', country: 'Netherlands' },
+  { code: '+46', country: 'Sweden' },
+  { code: '+47', country: 'Norway' },
+  { code: '+45', country: 'Denmark' },
+  { code: '+358', country: 'Finland' },
+  { code: '+48', country: 'Poland' },
+  { code: '+7', country: 'Russia' },
+  { code: '+86', country: 'China' },
+  { code: '+81', country: 'Japan' },
+  { code: '+82', country: 'Korea' },
+  { code: '+91', country: 'India' },
+  { code: '+55', country: 'Brazil' },
+  { code: '+52', country: 'Mexico' },
+];
 
 const Auth = ({ setUser }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { country, countryCode, language } = useGeolocation();
+  const { country } = useGeolocation();
   
+  const [languages, setLanguages] = useState([]);
   const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [registerData, setRegisterData] = useState({
     username: '',
@@ -21,10 +52,24 @@ const Auth = ({ setUser }) => {
     password: '',
     full_name: '',
     phone: '',
-    country: country,
-    language: language
+    country: country || 'US',
+    country_code: '+1',
+    language: 'en'
   });
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchLanguages();
+  }, []);
+
+  const fetchLanguages = async () => {
+    try {
+      const response = await api.getLanguages();
+      setLanguages(response.data);
+    } catch (error) {
+      console.error('Failed to fetch languages:', error);
+    }
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -59,8 +104,8 @@ const Auth = ({ setUser }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-12" data-testid="auth-page">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center py-12 bg-gradient-to-br from-gray-50 via-white to-gray-100" data-testid="auth-page">
+      <div className="w-full max-w-md px-4">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">QuoteVibe</h1>
           <p className="text-gray-600">Join our community</p>
@@ -151,17 +196,66 @@ const Auth = ({ setUser }) => {
                     data-testid="register-fullname-input"
                   />
                 </div>
+                
                 <div>
-                  <Label htmlFor="register-phone">{t('phone')} (Optional)</Label>
+                  <Label htmlFor="register-language">Language</Label>
+                  <Select
+                    value={registerData.language}
+                    onValueChange={(value) => setRegisterData({ ...registerData, language: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select language" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {languages.map((lang) => (
+                        <SelectItem key={lang.code} value={lang.code}>
+                          {lang.native_name} ({lang.name})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="register-country">Country</Label>
                   <Input
-                    id="register-phone"
-                    type="tel"
-                    placeholder={`${countryCode} ...`}
-                    value={registerData.phone}
-                    onChange={(e) => setRegisterData({ ...registerData, phone: e.target.value })}
-                    data-testid="register-phone-input"
+                    id="register-country"
+                    value={registerData.country}
+                    onChange={(e) => setRegisterData({ ...registerData, country: e.target.value })}
+                    placeholder="US"
                   />
                 </div>
+
+                <div>
+                  <Label htmlFor="register-phone">Phone (Optional)</Label>
+                  <div className="flex gap-2">
+                    <Select
+                      value={registerData.country_code}
+                      onValueChange={(value) => setRegisterData({ ...registerData, country_code: value })}
+                    >
+                      <SelectTrigger className="w-32">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {countryCodes.map((item) => (
+                          <SelectItem key={item.code} value={item.code}>
+                            {item.code} {item.country}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Input
+                      id="register-phone"
+                      type="tel"
+                      placeholder="Phone number"
+                      value={registerData.phone}
+                      onChange={(e) => setRegisterData({ ...registerData, phone: e.target.value })}
+                      data-testid="register-phone-input"
+                      className="flex-1"
+                    />
+                  </div>
+                </div>
+
                 <Button
                   type="submit"
                   className="w-full bg-gray-900 hover:bg-gray-800"
