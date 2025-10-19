@@ -826,7 +826,7 @@ async def get_unread_count(current_user: User = Depends(get_current_user)):
 # ============= RANKING ROUTES =============
 
 @api_router.get("/ranking")
-async def get_ranking(period: str = "daily"):
+async def get_ranking(period: str = "daily", language: Optional[str] = None, search: Optional[str] = None):
     now = datetime.now(timezone.utc)
     
     if period == "daily":
@@ -838,7 +838,17 @@ async def get_ranking(period: str = "daily"):
     else:
         start = now.replace(hour=0, minute=0, second=0, microsecond=0)
     
-    users = await db.users.find({}, {"_id": 0}).to_list(1000)
+    # Filter users by language and search
+    user_query = {}
+    if language:
+        user_query['language'] = language
+    if search:
+        user_query['$or'] = [
+            {'username': {'$regex': search, '$options': 'i'}},
+            {'full_name': {'$regex': search, '$options': 'i'}}
+        ]
+    
+    users = await db.users.find(user_query, {"_id": 0}).to_list(1000)
     
     rankings = []
     for user in users:
