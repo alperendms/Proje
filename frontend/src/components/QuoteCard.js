@@ -237,6 +237,15 @@ const QuoteCard = ({ quote, user, showUser = true }) => {
             <Button
               variant="ghost"
               size="icon"
+              onClick={handleShare}
+              className="h-8 w-8"
+              data-testid={`quote-share-btn-${quote.id}`}
+            >
+              <Share2 className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={handleDownload}
               className="h-8 w-8"
               data-testid={`quote-download-btn-${quote.id}`}
