@@ -116,6 +116,7 @@ class Category(BaseModel):
     name: str
     slug: str
     description: Optional[str] = None
+    translations: Optional[dict] = {}  # {"tr": {"name": "Aşk", "description": "..."}, "es": {...}}
     parent_id: Optional[str] = None
     icon: Optional[str] = None
     quotes_count: int = 0
