@@ -15,6 +15,7 @@ const AdminPanel = () => {
   const [settings, setSettings] = useState(null);
   const [backgrounds, setBackgrounds] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   
   // Forms
@@ -27,6 +28,8 @@ const AdminPanel = () => {
   });
   const [bgForm, setBgForm] = useState({ type: 'post', url: '' });
   const [categoryForm, setCategoryForm] = useState({ name: '', description: '', icon: '' });
+  const [blogForm, setBlogForm] = useState({ title: '', content: '', excerpt: '', featured_image: '', published: true });
+  const [editingBlog, setEditingBlog] = useState(null);
 
   useEffect(() => {
     loadData();
