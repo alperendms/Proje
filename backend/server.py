@@ -187,6 +187,8 @@ class Blog(BaseModel):
     content: str
     excerpt: Optional[str] = None
     featured_image: Optional[str] = None
+    language: str = "en"
+    country: Optional[str] = None
     published: bool = True
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
