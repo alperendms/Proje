@@ -292,7 +292,7 @@ const Settings = ({ user, setUser }) => {
               
               <div>
                 <Label htmlFor="country">Country</Label>
-                <Select value={formData.country_code} onValueChange={handleCountryChange}>
+                <Select value={formData.country_code || ''} onValueChange={handleCountryChange}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select your country" />
                   </SelectTrigger>
