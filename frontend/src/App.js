@@ -7,6 +7,8 @@ import { Toaster } from 'sonner';
 import api from './utils/api';
 
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+import BottomNav from './components/BottomNav';
 import Home from './pages/Home';
 import Explore from './pages/Explore';
 import Categories from './pages/Categories';
@@ -18,6 +20,8 @@ import CreateQuote from './pages/CreateQuote';
 import Messages from './pages/Messages';
 import AdminPanel from './pages/AdminPanel';
 import QuoteDetail from './pages/QuoteDetail';
+import Blogs from './pages/Blogs';
+import BlogDetail from './pages/BlogDetail';
 
 function App() {
   const { i18n } = useTranslation();
