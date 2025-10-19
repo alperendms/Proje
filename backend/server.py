@@ -385,18 +385,35 @@ async def get_current_admin(current_user: User = Depends(get_current_user)):
 
 @api_router.post("/auth/register")
 async def register(user_data: UserRegister):
-    existing = await db.users.find_one({"$or": [{"email": user_data.email}, {"username": user_data.username}]}, {"_id": 0})
+    # Normalize username - ensure it starts with @
+    username = user_data.username
+    if not username.startswith('@'):
+        username = f'@{username}'
+    
+    # Remove @ for uniqueness check
+    username_clean = username.lstrip('@')
+    
+    existing = await db.users.find_one({
+        "$or": [
+            {"email": user_data.email}, 
+            {"username": username},
+            {"username": f'@{username_clean}'}
+        ]
+    }, {"_id": 0})
     if existing:
         raise HTTPException(status_code=400, detail="Email or username already exists")
     
     user = User(
-        username=user_data.username,
+        username=username,
         email=user_data.email,
         password_hash=pwd_context.hash(user_data.password),
-        full_name=user_data.full_name,
+        first_name=user_data.first_name,
+        last_name=user_data.last_name,
+        full_name=user_data.full_name or f"{user_data.first_name or ''} {user_data.last_name or ''}".strip(),
         country=user_data.country,
         phone=user_data.phone,
         country_code=user_data.country_code,
+        phone_country_code=user_data.phone_country_code,
         language=user_data.language,
         social_links={}
     )
