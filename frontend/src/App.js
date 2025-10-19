@@ -1,53 +1,77 @@
-import { useEffect } from "react";
-import "@/App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import axios from "axios";
+import { useEffect, useState } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import './i18n/config';
+import './App.css';
+import { Toaster } from 'sonner';
+import api from './utils/api';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
-
-const Home = () => {
-  const helloWorldApi = async () => {
-    try {
-      const response = await axios.get(`${API}/`);
-      console.log(response.data.message);
-    } catch (e) {
-      console.error(e, `errored out requesting / api`);
-    }
-  };
-
-  useEffect(() => {
-    helloWorldApi();
-  }, []);
-
-  return (
-    <div>
-      <header className="App-header">
-        <a
-          className="App-link"
-          href="https://emergent.sh"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src="https://avatars.githubusercontent.com/in/1201222?s=120&u=2686cf91179bbafbc7a71bfbc43004cf9ae1acea&v=4" />
-        </a>
-        <p className="mt-5">Building something incredible ~!</p>
-      </header>
-    </div>
-  );
-};
+import Navbar from './components/Navbar';
+import Home from './pages/Home';
+import Explore from './pages/Explore';
+import Categories from './pages/Categories';
+import Discover from './pages/Discover';
+import Ranking from './pages/Ranking';
+import Profile from './pages/Profile';
+import Auth from './pages/Auth';
+import CreateQuote from './pages/CreateQuote';
+import Messages from './pages/Messages';
+import AdminPanel from './pages/AdminPanel';
+import QuoteDetail from './pages/QuoteDetail';
 
 function App() {
+  const { i18n } = useTranslation();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadUser = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const response = await api.getMe();
+          setUser(response.data);
+          i18n.changeLanguage(response.data.language || 'en');
+        } catch (error) {
+          localStorage.removeItem('token');
+        }
+      }
+      setLoading(false);
+    };
+    loadUser();
+  }, [i18n]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+        <div className="animate-pulse text-2xl font-light text-gray-400">Loading...</div>
+      </div>
+    );
+  }
+
   return (
-    <div className="App">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />}>
-            <Route index element={<Home />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </div>
+    <BrowserRouter>
+      <div className="App min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200">
+        <Navbar user={user} setUser={setUser} />
+        <div className="pt-16">
+          <Routes>
+            <Route path="/" element={<Home user={user} />} />
+            <Route path="/explore" element={<Explore user={user} />} />
+            <Route path="/categories" element={<Categories />} />
+            <Route path="/discover" element={<Discover user={user} />} />
+            <Route path="/ranking" element={<Ranking />} />
+            <Route path="/profile/:userId" element={<Profile user={user} />} />
+            <Route path="/auth" element={user ? <Navigate to="/" /> : <Auth setUser={setUser} />} />
+            <Route path="/create" element={user ? <CreateQuote user={user} /> : <Navigate to="/auth" />} />
+            <Route path="/messages" element={user ? <Messages user={user} /> : <Navigate to="/auth" />} />
+            <Route path="/messages/:userId" element={user ? <Messages user={user} /> : <Navigate to="/auth" />} />
+            <Route path="/admin" element={user?.is_admin ? <AdminPanel /> : <Navigate to="/" />} />
+            <Route path="/quote/:quoteId" element={<QuoteDetail user={user} />} />
+          </Routes>
+        </div>
+        <Toaster position="top-right" richColors />
+      </div>
+    </BrowserRouter>
   );
 }
 
