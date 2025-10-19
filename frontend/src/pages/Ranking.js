@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { Trophy, TrendingUp, Users, MessageSquare, UserPlus } from 'lucide-react';
+import { Trophy, TrendingUp, Users, MessageSquare, UserPlus, Search, Twitter, Instagram, Globe } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import { Input } from '../components/ui/input';
+import { Button } from '../components/ui/button';
+import { useLanguage } from '../contexts/LanguageContext';
 import api from '../utils/api';
 
 const Ranking = () => {
