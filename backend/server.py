@@ -48,9 +48,11 @@ class User(BaseModel):
     country_code: Optional[str] = None
     phone: Optional[str] = None
     language: str = "en"
+    social_links: Optional[dict] = {}
     followers_count: int = 0
     following_count: int = 0
     quotes_count: int = 0
+    score: int = 0
     is_admin: bool = False
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
