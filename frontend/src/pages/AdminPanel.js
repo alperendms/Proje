@@ -121,6 +121,51 @@ const AdminPanel = () => {
     }
   };
 
+  const handleSaveBlog = async (e) => {
+    e.preventDefault();
+    if (!blogForm.title || !blogForm.content) {
+      toast.error('Title and content are required');
+      return;
+    }
+    try {
+      if (editingBlog) {
+        await api.updateBlog(editingBlog.id, blogForm);
+        toast.success('Blog updated');
+        setEditingBlog(null);
+      } else {
+        await api.createBlog(blogForm);
+        toast.success('Blog created');
+      }
+      setBlogForm({ title: '', content: '', excerpt: '', featured_image: '', published: true });
+      const res = await api.getBlogs({ published_only: false });
+      setBlogs(res.data);
+    } catch (error) {
+      toast.error('Error saving blog');
+    }
+  };
+
+  const handleEditBlog = (blog) => {
+    setEditingBlog(blog);
+    setBlogForm({
+      title: blog.title,
+      content: blog.content,
+      excerpt: blog.excerpt || '',
+      featured_image: blog.featured_image || '',
+      published: blog.published
+    });
+  };
+
+  const handleDeleteBlog = async (blogId) => {
+    if (!window.confirm('Delete this blog?')) return;
+    try {
+      await api.deleteBlog(blogId);
+      toast.success('Blog deleted');
+      setBlogs(blogs.filter(b => b.id !== blogId));
+    } catch (error) {
+      toast.error('Error deleting blog');
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
