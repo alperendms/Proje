@@ -303,17 +303,6 @@ const AdminPanel = () => {
     });
   };
 
-  const handleDeleteBlog = async (blogId) => {
-    if (!window.confirm('Delete this blog?')) return;
-    try {
-      await api.deleteBlog(blogId);
-      toast.success('Blog deleted');
-      setBlogs(blogs.filter(b => b.id !== blogId));
-    } catch (error) {
-      toast.error('Error deleting blog');
-    }
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
