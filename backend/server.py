@@ -1545,13 +1545,14 @@ logger = logging.getLogger(__name__)
 
 @app.on_event("startup")
 async def startup_db():
-    admin = await db.users.find_one({"username": "admin"}, {"_id": 0})
+    admin = await db.users.find_one({"username": "@admin"}, {"_id": 0})
     if not admin:
         admin_user = User(
-            username="admin",
+            username="@admin",
             email="admin@quotevibe.com",
             password_hash=pwd_context.hash("admin123"),
             full_name="Admin",
+            first_name="Admin",
             is_admin=True,
             social_links={}
         )
