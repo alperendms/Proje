@@ -40,6 +40,13 @@ const AdminPanel = () => {
   const [languageForm, setLanguageForm] = useState({ code: '', name: '', native_name: '', enabled: true });
   const [editingLanguage, setEditingLanguage] = useState(null);
   
+  // Translation Management
+  const [showTranslateModal, setShowTranslateModal] = useState(false);
+  const [currentTranslatingLang, setCurrentTranslatingLang] = useState(null);
+  const [translationKeys, setTranslationKeys] = useState({});
+  const [translations, setTranslations] = useState({});
+  const [loadingTranslations, setLoadingTranslations] = useState(false);
+  
   const [translationForm, setTranslationForm] = useState({ language: '', name: '', description: '' });
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [showTranslationModal, setShowTranslationModal] = useState(false);
