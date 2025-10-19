@@ -218,6 +218,102 @@ const AdminPanel = () => {
     }
   };
 
+  // Language Management Functions
+  const handleAddLanguage = async (e) => {
+    e.preventDefault();
+    if (!languageForm.code || !languageForm.name || !languageForm.native_name) {
+      toast.error('All fields are required');
+      return;
+    }
+    try {
+      if (editingLanguage) {
+        await api.updateLanguage(editingLanguage.id, languageForm);
+        toast.success('Language updated');
+        setEditingLanguage(null);
+      } else {
+        await api.createLanguage(languageForm);
+        toast.success('Language added');
+      }
+      setLanguageForm({ code: '', name: '', native_name: '', enabled: true });
+      const res = await api.getLanguages();
+      setLanguages(res.data);
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Error saving language');
+    }
+  };
+
+  const handleEditLanguage = (lang) => {
+    setEditingLanguage(lang);
+    setLanguageForm({
+      code: lang.code,
+      name: lang.name,
+      native_name: lang.native_name,
+      enabled: lang.enabled
+    });
+  };
+
+  const handleDeleteLanguage = async (langId) => {
+    if (!window.confirm('Delete this language?')) return;
+    try {
+      await api.deleteLanguage(langId);
+      toast.success('Language deleted');
+      setLanguages(languages.filter(l => l.id !== langId));
+    } catch (error) {
+      toast.error('Error deleting language');
+    }
+  };
+
+  // System Settings Functions
+  const handleSaveSystemSettings = async (e) => {
+    e.preventDefault();
+    try {
+      await api.updateSystemSettings(systemForm);
+      toast.success('System settings saved');
+    } catch (error) {
+      toast.error('Error saving system settings');
+    }
+  };
+
+  // User Management Functions
+  const loadUsers = async () => {
+    try {
+      const res = await api.getAllUsers();
+      setUsers(res.data);
+    } catch (error) {
+      toast.error('Error loading users');
+    }
+  };
+
+  const handleDeleteUser = async (userId) => {
+    if (!window.confirm('Delete this user? This will also delete all their data.')) return;
+    try {
+      await api.deleteUser(userId);
+      toast.success('User deleted');
+      setUsers(users.filter(u => u.id !== userId));
+    } catch (error) {
+      toast.error('Error deleting user');
+    }
+  };
+    setBlogForm({
+      title: blog.title,
+      content: blog.content,
+      excerpt: blog.excerpt || '',
+      featured_image: blog.featured_image || '',
+      published: blog.published
+    });
+  };
+
+  const handleDeleteBlog = async (blogId) => {
+    if (!window.confirm('Delete this blog?')) return;
+    try {
+      await api.deleteBlog(blogId);
+      toast.success('Blog deleted');
+      setBlogs(blogs.filter(b => b.id !== blogId));
+    } catch (error) {
+      toast.error('Error deleting blog');
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
