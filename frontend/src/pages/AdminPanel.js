@@ -437,12 +437,12 @@ const AdminPanel = () => {
                   </div>
                   <div>
                     <Label htmlFor="blog_content">Content</Label>
-                    <textarea
+                    <Textarea
                       id="blog_content"
                       value={blogForm.content}
                       onChange={(e) => setBlogForm({ ...blogForm, content: e.target.value })}
                       placeholder="Blog content (Markdown supported)"
-                      className="w-full min-h-[200px] p-3 border border-gray-300 rounded-md resize-vertical"
+                      className="min-h-[200px] resize-vertical"
                       data-testid="blog-content-input"
                     />
                   </div>
