@@ -50,6 +50,35 @@
         </script>
     </head>
     <body>
+        <script>
+            // CRITICAL: Suppress ResizeObserver errors BEFORE any React code loads
+            (function() {
+                const resizeObserverError = 'ResizeObserver loop completed with undelivered notifications';
+                
+                // Override error handler at the earliest possible moment
+                window.addEventListener('error', function(e) {
+                    if (e.message === resizeObserverError || (e.message && e.message.includes('ResizeObserver'))) {
+                        e.stopImmediatePropagation();
+                        e.stopPropagation();
+                        e.preventDefault();
+                        return false;
+                    }
+                }, true);
+                
+                // Override console.error before bundle loads
+                const consoleError = console.error;
+                console.error = function() {
+                    const args = Array.from(arguments);
+                    if (args.some(arg => 
+                        (typeof arg === 'string' && arg.includes('ResizeObserver')) ||
+                        (arg && arg.message && arg.message.includes('ResizeObserver'))
+                    )) {
+                        return;
+                    }
+                    consoleError.apply(console, arguments);
+                };
+            })();
+        </script>
         <noscript>You need to enable JavaScript to run this app.</noscript>
         <div id="root"></div>
         <!--
