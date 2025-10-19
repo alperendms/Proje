@@ -1033,14 +1033,18 @@ async def get_home_data(language: Optional[str] = "en"):
     users_count = settings.get('homepage_users_count', 5)
     blogs_count = settings.get('homepage_blogs_count', 4)
     
-    today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
-    
-    # Trending quotes - filtered by language
+    # Trending quotes - filtered by language (last 7 days instead of today)
+    week_ago = datetime.now(timezone.utc) - timedelta(days=7)
     quote_query = {
-        "created_at": {"$gte": today.isoformat()},
+        "created_at": {"$gte": week_ago.isoformat()},
         "$or": [{"language": language}, {"language": "en"}]
     }
     trending_quotes = await db.quotes.find(quote_query, {"_id": 0}).sort("views_count", -1).limit(quotes_count).to_list(quotes_count)
+    
+    # If no quotes from last week, get any recent quotes
+    if not trending_quotes:
+        quote_query = {"$or": [{"language": language}, {"language": "en"}]}
+        trending_quotes = await db.quotes.find(quote_query, {"_id": 0}).sort("created_at", -1).limit(quotes_count).to_list(quotes_count)
     
     for q in trending_quotes:
         if isinstance(q['created_at'], str):
