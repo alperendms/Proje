@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { Search } from 'lucide-react';
@@ -7,9 +7,11 @@ import QuoteCard from '../components/QuoteCard';
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const Explore = ({ user }) => {
   const { t } = useTranslation();
+  const { language } = useLanguage();
   const [searchParams, setSearchParams] = useSearchParams();
   const [quotes, setQuotes] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -23,7 +25,7 @@ const Explore = ({ user }) => {
 
   useEffect(() => {
     loadQuotes();
-  }, [searchParams]);
+  }, [searchParams, language]);
 
   const loadCategories = async () => {
     try {
@@ -37,7 +39,7 @@ const Explore = ({ user }) => {
   const loadQuotes = async () => {
     setLoading(true);
     try {
-      const params = {};
+      const params = { language };
       if (searchParams.get('search')) params.search = searchParams.get('search');
       if (searchParams.get('category')) params.category_id = searchParams.get('category');
       
