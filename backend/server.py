@@ -976,9 +976,9 @@ async def create_blog(blog_data: BlogCreate, current_user: User = Depends(get_cu
 async def get_blogs(skip: int = 0, limit: int = 20, published_only: bool = True, language: Optional[str] = None):
     query = {"published": True} if published_only else {}
     
-    # Language filtering: show user's language + English (default)
+    # Language filtering: ONLY selected language (no fallback)
     if language:
-        query['$or'] = [{'language': language}, {'language': 'en'}]
+        query['language'] = language
     
     blogs = await db.blogs.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
     for b in blogs:
