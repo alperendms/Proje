@@ -83,9 +83,39 @@ const QuoteCard = ({ quote, user, showUser = true }) => {
     }
   };
 
+  const handleShare = async (e) => {
+    e.stopPropagation();
+    const shareUrl = `${window.location.origin}/quote/${quote.id}`;
+    
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: 'Check out this quote',
+          text: quote.content,
+          url: shareUrl,
+        });
+      } else {
+        // Fallback to copy link
+        await navigator.clipboard.writeText(shareUrl);
+        toast.success('Share link copied to clipboard!');
+      }
+    } catch (error) {
+      if (error.name !== 'AbortError') {
+        // Fallback to copy
+        try {
+          await navigator.clipboard.writeText(shareUrl);
+          toast.success('Share link copied to clipboard!');
+        } catch (clipboardError) {
+          toast.error('Failed to copy share link');
+        }
+      }
+    }
+  };
+
   const handleCopy = (e) => {
     e.stopPropagation();
-    const text = `"${quote.content}"${quote.author ? ` - ${quote.author}` : ''}`;
+    const authorText = quote.author || (quoteUser ? `${quoteUser.full_name || quoteUser.username}` : '');
+    const text = `"${quote.content}"${authorText ? ` - ${authorText}` : ''}`;
     navigator.clipboard.writeText(text);
     toast.success('Quote copied to clipboard');
   };
