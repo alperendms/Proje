@@ -142,18 +142,20 @@ const AdminPanel = () => {
 
   const handleAddBackground = async (e) => {
     e.preventDefault();
-    if (!bgForm.url) {
-      toast.error('URL is required');
+    if (!bgForm.file) {
+      toast.error('Please select an image file');
       return;
     }
     try {
-      await api.addBackground(bgForm);
-      toast.success('Background added');
-      setBgForm({ type: 'post', url: '' });
+      const response = await api.uploadBackground(bgForm.file, bgForm.type);
+      toast.success('Background uploaded successfully!');
+      setBgForm({ type: 'post', file: null });
+      // Reset file input
+      document.getElementById('bg_file').value = '';
       const res = await api.getBackgrounds();
       setBackgrounds(res.data);
     } catch (error) {
-      toast.error('Error adding background');
+      toast.error('Error uploading background');
     }
   };
 
