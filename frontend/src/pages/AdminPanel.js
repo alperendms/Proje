@@ -994,7 +994,15 @@ const AdminPanel = () => {
                         </div>
                         <div className="flex gap-2">
                           <Button size="sm" variant="outline" onClick={() => handleEditLanguage(lang)}>
-                            Edit
+                            Edit Info
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            className="bg-blue-600 hover:bg-blue-700 text-white"
+                            onClick={() => handleOpenTranslateModal(lang)}
+                          >
+                            <Globe className="h-4 w-4 mr-1" />
+                            Translate
                           </Button>
                           <Button size="sm" variant="destructive" onClick={() => handleDeleteLanguage(lang.id)}>
                             <Trash2 className="h-4 w-4" />
