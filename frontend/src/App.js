@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import './i18n/config';
 import './App.css';
 import { Toaster } from 'sonner';
 import api from './utils/api';
+import { LanguageProvider } from './contexts/LanguageContext';
 
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -57,7 +58,8 @@ function App() {
 
   return (
     <BrowserRouter>
-      <div className="App min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200">
+      <LanguageProvider user={user}>
+        <div className="App min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200">
         <Navbar user={user} setUser={setUser} />
         <div className="pt-16 pb-20 md:pb-0">
           <Routes>
