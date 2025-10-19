@@ -22,6 +22,8 @@ import AdminPanel from './pages/AdminPanel';
 import QuoteDetail from './pages/QuoteDetail';
 import Blogs from './pages/Blogs';
 import BlogDetail from './pages/BlogDetail';
+import Settings from './pages/Settings';
+import Notifications from './pages/Notifications';
 
 function App() {
   const { i18n } = useTranslation();
