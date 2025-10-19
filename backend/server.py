@@ -198,6 +198,8 @@ class BlogCreate(BaseModel):
     content: str
     excerpt: Optional[str] = None
     featured_image: Optional[str] = None
+    language: str = "en"
+    country: Optional[str] = None
     published: bool = True
 
 class Language(BaseModel):
