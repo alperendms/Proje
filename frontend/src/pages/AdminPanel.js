@@ -32,7 +32,7 @@ const AdminPanel = () => {
     smtp_password: '',
     smtp_from: ''
   });
-  const [bgForm, setBgForm] = useState({ type: 'post', url: '' });
+  const [bgForm, setBgForm] = useState({ type: 'post', file: null });
   const [categoryForm, setCategoryForm] = useState({ name: '', description: '', icon: '' });
   const [blogForm, setBlogForm] = useState({ title: '', content: '', excerpt: '', featured_image: '', published: true });
   const [editingBlog, setEditingBlog] = useState(null);
