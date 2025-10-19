@@ -723,6 +723,77 @@ async def get_admin_stats(current_user: User = Depends(get_current_admin)):
 
 # ============= HOME PAGE DATA =============
 
+# ============= BLOG ROUTES =============
+
+@api_router.post("/admin/blogs")
+async def create_blog(blog_data: BlogCreate, current_user: User = Depends(get_current_admin)):
+    slug = blog_data.title.lower().replace(" ", "-").replace("'", "")
+    existing = await db.blogs.find_one({"slug": slug}, {"_id": 0})
+    if existing:
+        slug = f"{slug}-{str(uuid.uuid4())[:8]}"
+    
+    blog = Blog(
+        title=blog_data.title,
+        slug=slug,
+        content=blog_data.content,
+        excerpt=blog_data.excerpt,
+        featured_image=blog_data.featured_image,
+        published=blog_data.published
+    )
+    
+    doc = blog.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    doc['updated_at'] = doc['updated_at'].isoformat()
+    await db.blogs.insert_one(doc)
+    return blog
+
+@api_router.get("/blogs")
+async def get_blogs(skip: int = 0, limit: int = 20, published_only: bool = True):
+    query = {"published": True} if published_only else {}
+    blogs = await db.blogs.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+    for b in blogs:
+        if isinstance(b['created_at'], str):
+            b['created_at'] = datetime.fromisoformat(b['created_at'])
+        if isinstance(b['updated_at'], str):
+            b['updated_at'] = datetime.fromisoformat(b['updated_at'])
+    return blogs
+
+@api_router.get("/blogs/{blog_id}")
+async def get_blog(blog_id: str):
+    blog = await db.blogs.find_one({"id": blog_id}, {"_id": 0})
+    if not blog:
+        raise HTTPException(status_code=404, detail="Blog not found")
+    if isinstance(blog['created_at'], str):
+        blog['created_at'] = datetime.fromisoformat(blog['created_at'])
+    if isinstance(blog['updated_at'], str):
+        blog['updated_at'] = datetime.fromisoformat(blog['updated_at'])
+    return blog
+
+@api_router.put("/admin/blogs/{blog_id}")
+async def update_blog(blog_id: str, blog_data: BlogCreate, current_user: User = Depends(get_current_admin)):
+    update_data = {
+        "title": blog_data.title,
+        "content": blog_data.content,
+        "excerpt": blog_data.excerpt,
+        "featured_image": blog_data.featured_image,
+        "published": blog_data.published,
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    result = await db.blogs.update_one({"id": blog_id}, {"$set": update_data})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Blog not found")
+    return {"message": "Blog updated"}
+
+@api_router.delete("/admin/blogs/{blog_id}")
+async def delete_blog(blog_id: str, current_user: User = Depends(get_current_admin)):
+    result = await db.blogs.delete_one({"id": blog_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Blog not found")
+    return {"message": "Blog deleted"}
+
+# ============= HOME PAGE DATA =============
+
 @api_router.get("/home")
 async def get_home_data():
     today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
