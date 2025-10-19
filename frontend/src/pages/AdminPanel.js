@@ -1110,6 +1110,106 @@ const AdminPanel = () => {
               </DialogContent>
             </Dialog>
           )}
+
+          {/* Translation Modal */}
+          <Dialog open={showTranslateModal} onOpenChange={setShowTranslateModal}>
+            <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>
+                  Translate Site Content - {currentTranslatingLang?.native_name} ({currentTranslatingLang?.code})
+                </DialogTitle>
+              </DialogHeader>
+              
+              {loadingTranslations ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-500">Loading translations...</p>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <p className="text-sm text-blue-800">
+                      <strong>Note:</strong> Left side shows the English original text. Enter translations on the right.
+                      Leave blank to use the English version.
+                    </p>
+                  </div>
+
+                  {Object.entries(translationKeys).map(([section, keys]) => (
+                    <div key={section} className="space-y-3">
+                      <h3 className="font-semibold text-lg capitalize border-b pb-2">
+                        {section.replace('_', ' ')}
+                      </h3>
+                      
+                      <div className="grid gap-3">
+                        {keys.map((key) => (
+                          <div key={key} className="grid grid-cols-2 gap-3 items-start">
+                            <div className="bg-gray-50 p-3 rounded border">
+                              <p className="text-xs text-gray-500 mb-1 font-mono">{key}</p>
+                              <p className="text-sm">
+                                {translations.en?.[key] || key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                              </p>
+                            </div>
+                            
+                            <div>
+                              <Input
+                                placeholder={`Translation in ${currentTranslatingLang?.native_name}`}
+                                value={translations[key] || ''}
+                                onChange={(e) => handleTranslationChange(key, e.target.value)}
+                                className="w-full"
+                              />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Category Translations Section */}
+                  {categories.length > 0 && (
+                    <div className="space-y-3">
+                      <h3 className="font-semibold text-lg border-b pb-2">Category Names</h3>
+                      <p className="text-sm text-gray-600">Translate category names for this language</p>
+                      
+                      <div className="grid gap-3">
+                        {categories.map((category) => (
+                          <div key={category.id} className="grid grid-cols-2 gap-3 items-start">
+                            <div className="bg-gray-50 p-3 rounded border">
+                              <p className="text-xs text-gray-500 mb-1">Original</p>
+                              <p className="text-sm font-medium">{category.name}</p>
+                              {category.description && (
+                                <p className="text-xs text-gray-600 mt-1">{category.description}</p>
+                              )}
+                            </div>
+                            
+                            <div className="space-y-2">
+                              <Input
+                                placeholder={`${category.name} in ${currentTranslatingLang?.native_name}`}
+                                value={translations[`category_${category.id}_name`] || ''}
+                                onChange={(e) => handleTranslationChange(`category_${category.id}_name`, e.target.value)}
+                              />
+                              <Input
+                                placeholder="Description translation"
+                                value={translations[`category_${category.id}_desc`] || ''}
+                                onChange={(e) => handleTranslationChange(`category_${category.id}_desc`, e.target.value)}
+                              />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="flex justify-end gap-3 pt-4 border-t">
+                    <Button variant="outline" onClick={() => setShowTranslateModal(false)}>
+                      Cancel
+                    </Button>
+                    <Button onClick={handleSaveTranslations} className="bg-blue-600 hover:bg-blue-700">
+                      Save Translations
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     </div>
