@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { ChevronDown, TrendingUp, Users, Layers } from 'lucide-react';
+import { ChevronDown, TrendingUp, Users, Layers, UserPlus, MessageSquare } from 'lucide-react';
 import api from '../utils/api';
 import QuoteCard from '../components/QuoteCard';
 import { Button } from '../components/ui/button';
