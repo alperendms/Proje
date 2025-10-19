@@ -85,6 +85,7 @@ function App() {
         <BottomNav />
         <Toaster position="top-right" richColors />
       </div>
+      </LanguageProvider>
     </BrowserRouter>
   );
 }
